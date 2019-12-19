@@ -16,8 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import { timefilter } from 'ui/timefilter';
 import { esFilters, esQuery, TimeRange, Query } from '../../../../plugins/data/public';
 
 // @ts-ignore
@@ -39,11 +37,12 @@ interface VegaRequestHandlerParams {
 
 export function createVegaRequestHandler({
   es,
-  uiSettings,
+  plugins,
+  core: { uiSettings },
   serviceSettings,
 }: VegaVisualizationDependencies) {
   const searchCache = new SearchCache(es, { max: 10, maxAge: 4 * 1000 });
-  const timeCache = new TimeCache(timefilter, 3 * 1000);
+  const timeCache = new TimeCache(plugins.data.query.timefilter.timefilter, 3 * 1000);
 
   return ({ timeRange, filters, query, visParams }: VegaRequestHandlerParams) => {
     timeCache.setTimeRange(timeRange);
