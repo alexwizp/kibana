@@ -18,32 +18,33 @@
  */
 
 import { ManagementSetup, ManagementStart } from '../types';
-import { ManagementSection } from '../management_section';
+import { ManagementItem } from '../management_item';
 
-const createManagementSectionMock = (): jest.Mocked<PublicMethodsOf<ManagementSection>> => {
-  return {
+const createManagementSectionMock = () =>
+  (({
+    disable: jest.fn(),
+    enable: jest.fn(),
     registerApp: jest.fn(),
     getApp: jest.fn(),
-    getAppsEnabled: jest.fn().mockReturnValue([]),
-  };
-};
+    getEnabledItems: jest.fn().mockReturnValue([]),
+  } as unknown) as ManagementItem);
 
-const createSetupContract = (): DeeplyMockedKeys<ManagementSetup> => ({
-  sections: {
-    register: jest.fn(),
-    getSection: jest.fn().mockReturnValue(createManagementSectionMock()),
-    getAllSections: jest.fn().mockReturnValue([]),
-  },
-});
+const createSetupContract = () =>
+  ({
+    sections: {
+      register: jest.fn(),
+      getSection: jest.fn().mockReturnValue(createManagementSectionMock()),
+    },
+  } as ManagementSetup);
 
-const createStartContract = (): DeeplyMockedKeys<ManagementStart> => ({
-  legacy: {},
-  sections: {
-    getSection: jest.fn(),
-    getAllSections: jest.fn(),
-    navigateToApp: jest.fn(),
-  },
-});
+const createStartContract = () =>
+  ({
+    sections: {
+      getSection: jest.fn(),
+      getSections: jest.fn(),
+      getSectionsEnabled: jest.fn(),
+    },
+  } as ManagementStart);
 
 export const managementPluginMock = {
   createSetupContract,

@@ -17,34 +17,21 @@
  * under the License.
  */
 
-import { ManagementSection } from './management_section';
-// @ts-ignore
-import { LegacyManagementSection } from './legacy';
-import { coreMock } from '../../../core/public/mocks';
+import { ManagementItem } from './management_item';
 
-function createSection(registerLegacyApp: () => void) {
-  const legacySection = new LegacyManagementSection('legacy');
-  const getLegacySection = () => legacySection;
-  const getManagementSections: () => ManagementSection[] = () => [];
-
-  const testSectionConfig = { id: 'test-section', title: 'Test Section' };
-  return new ManagementSection(
-    testSectionConfig,
-    getManagementSections,
-    registerLegacyApp,
-    getLegacySection,
-    coreMock.createSetup().getStartServices
-  );
-}
+const createSection = (
+  config: ManagementItem = {
+    id: 'test-section',
+    title: 'Test Section',
+  } as ManagementItem
+) => new ManagementItem(config);
 
 test('cannot register two apps with the same id', () => {
-  const registerLegacyApp = jest.fn();
-  const section = createSection(registerLegacyApp);
-
+  const section = createSection();
   const testAppConfig = { id: 'test-app', title: 'Test App', mount: () => () => {} };
 
   section.registerApp(testAppConfig);
-  expect(registerLegacyApp).toHaveBeenCalled();
+
   expect(section.apps.length).toEqual(1);
 
   expect(() => {
@@ -53,13 +40,14 @@ test('cannot register two apps with the same id', () => {
 });
 
 test('can enable and disable apps', () => {
-  const registerLegacyApp = jest.fn();
-  const section = createSection(registerLegacyApp);
-
+  const section = createSection();
   const testAppConfig = { id: 'test-app', title: 'Test App', mount: () => () => {} };
 
   const app = section.registerApp(testAppConfig);
-  expect(section.getAppsEnabled().length).toEqual(1);
+
+  expect(section.getEnabledItems().length).toEqual(1);
+
   app.disable();
-  expect(section.getAppsEnabled().length).toEqual(0);
+
+  expect(section.getEnabledItems().length).toEqual(0);
 });

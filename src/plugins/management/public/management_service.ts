@@ -17,70 +17,34 @@
  * under the License.
  */
 
-import { ManagementSection } from './management_section';
-import { KibanaLegacySetup } from '../../kibana_legacy/public';
-// @ts-ignore
-import { LegacyManagementSection } from './legacy';
-import { CreateSection } from './types';
-import { StartServicesAccessor, CoreStart } from '../../../core/public';
+import { ManagementItem } from './management_item';
+import { CreateManagementItemArgs, SectionsServiceSetup, SectionsServiceStart } from './types';
+
+const getSectionByName = (sections: ManagementItem[], sectionId: ManagementItem['id']) => {
+  return sections.find(section => section.id === sectionId);
+};
 
 export class ManagementService {
-  private sections: ManagementSection[] = [];
+  private sections: ManagementItem[] = [];
 
-  private register(
-    registerLegacyApp: KibanaLegacySetup['registerLegacyApp'],
-    getLegacyManagement: () => LegacyManagementSection,
-    getStartServices: StartServicesAccessor
-  ) {
-    return (section: CreateSection) => {
-      if (this.getSection(section.id)) {
-        throw Error(`ManagementSection '${section.id}' already registered`);
-      }
+  private getSection = (sectionId: ManagementItem['id']) =>
+    getSectionByName(this.sections, sectionId);
 
-      const newSection = new ManagementSection(
-        section,
-        this.getSectionsEnabled.bind(this),
-        registerLegacyApp,
-        getLegacyManagement,
-        getStartServices
-      );
-      this.sections.push(newSection);
-      return newSection;
-    };
-  }
-  private getSection(sectionId: ManagementSection['id']) {
-    return this.sections.find(section => section.id === sectionId);
-  }
+  private register = (section: CreateManagementItemArgs) => {
+    if (getSectionByName(this.sections, section.id)) {
+      throw Error(`ManagementSection '${section.id}' already registered`);
+    }
 
-  private getAllSections() {
-    return this.sections;
-  }
+    const newSection = new ManagementItem(section);
 
-  private getSectionsEnabled() {
-    return this.sections
-      .filter(section => section.getAppsEnabled().length > 0)
-      .sort((a, b) => a.order - b.order);
-  }
-
-  private sharedInterface = {
-    getSection: this.getSection.bind(this),
-    getSectionsEnabled: this.getSectionsEnabled.bind(this),
-    getAllSections: this.getAllSections.bind(this),
+    this.sections.push(newSection);
+    return newSection;
   };
 
-  public setup(
-    kibanaLegacy: KibanaLegacySetup,
-    getLegacyManagement: () => LegacyManagementSection,
-    getStartServices: StartServicesAccessor
-  ) {
-    const register = this.register.bind(this)(
-      kibanaLegacy.registerLegacyApp,
-      getLegacyManagement,
-      getStartServices
-    );
+  setup(): SectionsServiceSetup {
+    this.register({ id: 'kibana', title: 'Kibana', order: 30, euiIconType: 'logoKibana' });
 
-    register({ id: 'kibana', title: 'Kibana', order: 30, euiIconType: 'logoKibana' });
-    register({
+    this.register({
       id: 'elasticsearch',
       title: 'Elasticsearch',
       order: 20,
@@ -88,15 +52,19 @@ export class ManagementService {
     });
 
     return {
-      register,
-      ...this.sharedInterface,
+      register: this.register,
+      getSection: this.getSection,
     };
   }
 
-  public start(navigateToApp: CoreStart['application']['navigateToApp']) {
+  start(): SectionsServiceStart {
     return {
-      navigateToApp, // apps are currently registered as top level apps but this may change in the future
-      ...this.sharedInterface,
+      getSections: () => this.sections,
+      getSectionsEnabled: () =>
+        this.sections
+          .filter(section => section.enabled && section.apps.length)
+          .sort((a, b) => a.order - b.order),
+      getSection: this.getSection,
     };
   }
 }

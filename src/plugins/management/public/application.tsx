@@ -17,4 +17,21 @@
  * under the License.
  */
 
-export { ManagementChrome } from './management_chrome';
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+import { AppMountContext, AppMountParameters } from 'kibana/public';
+import { ManagementApp, ManagementAppDependencies } from './components/management_app';
+
+export const renderApp = async (
+  context: AppMountContext,
+  { history, appBasePath, element }: AppMountParameters,
+  dependencies: ManagementAppDependencies
+) => {
+  ReactDOM.render(
+    <ManagementApp dependencies={dependencies} appBasePath={appBasePath} history={history} />,
+    element
+  );
+
+  return () => ReactDOM.unmountComponentAtNode(element);
+};
