@@ -17,14 +17,13 @@
  * under the License.
  */
 
-import { isAutoInterval } from '../_interval_options';
-
 interface IntervalValuesRange {
   min: number;
   max: number;
 }
 
 export interface CalculateHistogramIntervalParams {
+  useAuto: boolean;
   interval: string;
   maxBucketsUiSettings: number;
   maxBucketsUserInput?: number;
@@ -103,17 +102,17 @@ const calculateAutoInterval = (
 };
 
 export const calculateHistogramInterval = ({
+  useAuto,
   interval,
   maxBucketsUiSettings,
   maxBucketsUserInput,
   intervalBase,
   values,
 }: CalculateHistogramIntervalParams) => {
-  const isAuto = isAutoInterval(interval);
   let calculatedInterval = 0;
 
   if (values) {
-    calculatedInterval = isAuto
+    calculatedInterval = useAuto
       ? calculateAutoInterval(values, maxBucketsUiSettings, maxBucketsUserInput)
       : calculateForGivenInterval(values, parseFloat(interval), maxBucketsUiSettings);
   }

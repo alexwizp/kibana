@@ -17,6 +17,7 @@
  * under the License.
  */
 
+export { AutoIntervalParamEditor } from './auto_switch';
 export { AutoPrecisionParamEditor } from './auto_precision';
 export { DateRangesParamEditor } from './date_ranges';
 export { DropPartialsParamEditor } from './drop_partials';

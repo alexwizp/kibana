@@ -18,16 +18,9 @@
  */
 
 import { get } from 'lodash';
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
-import {
-  EuiFieldNumber,
-  EuiFormRow,
-  EuiIconTip,
-  EuiSwitch,
-  EuiSwitchProps,
-  EuiFieldNumberProps,
-} from '@elastic/eui';
+import { EuiFieldNumber, EuiFormRow, EuiIconTip, EuiFieldNumberProps } from '@elastic/eui';
 import { i18n } from '@kbn/i18n';
 import { FormattedMessage } from '@kbn/i18n/react';
 import { UI_SETTINGS } from '../../../../data/public';
@@ -54,20 +47,10 @@ const label = (
   </>
 );
 
-const autoInterval = 'auto';
-const isAutoInterval = (value: unknown) => Boolean(value && value === autoInterval);
-
 const selectIntervalPlaceholder = i18n.translate(
   'visDefaultEditor.controls.numberInterval.selectIntervalPlaceholder',
   {
     defaultMessage: 'Enter an interval',
-  }
-);
-
-const autoIntervalIsUsedPlaceholder = i18n.translate(
-  'visDefaultEditor.controls.numberInterval.autoInteralIsUsed',
-  {
-    defaultMessage: 'Auto interval is used',
   }
 );
 
@@ -79,11 +62,10 @@ function NumberIntervalParamEditor({
   setTouched,
   setValidity,
   setValue,
-}: AggParamEditorProps<string | undefined>) {
-  const [autoChecked, setAutoChecked] = useState(isAutoInterval(value));
+}: AggParamEditorProps<number | undefined>) {
   const base: number = get(editorConfig, 'interval.base') as number;
   const min = base || 0;
-  const isValid = value !== undefined && (isAutoInterval(value) || Number(value) >= min);
+  const isValid = value !== undefined && Number(value) >= min;
 
   useEffect(() => {
     setValidity(isValid);
@@ -92,16 +74,6 @@ function NumberIntervalParamEditor({
   const onChange: EuiFieldNumberProps['onChange'] = useCallback(
     ({ target }) => setValue(isNaN(target.valueAsNumber) ? undefined : target.valueAsNumber),
     [setValue]
-  );
-
-  const onAutoSwitchChange: EuiSwitchProps['onChange'] = useCallback(
-    (e) => {
-      const isAutoSwitchChecked = e.target.checked;
-
-      setAutoChecked(isAutoSwitchChecked);
-      setValue(isAutoSwitchChecked ? autoInterval : undefined);
-    },
-    [setAutoChecked, setValue]
   );
 
   return (
@@ -113,26 +85,16 @@ function NumberIntervalParamEditor({
       helpText={get(editorConfig, 'interval.help')}
     >
       <EuiFieldNumber
-        value={value === undefined ? '' : value}
+        value={value}
         min={min}
         step={base || 'any'}
         data-test-subj={`visEditorInterval${agg.id}`}
         isInvalid={showValidation && !isValid}
         onChange={onChange}
         onBlur={setTouched}
-        disabled={autoChecked}
         fullWidth={true}
         compressed
-        placeholder={autoChecked ? autoIntervalIsUsedPlaceholder : selectIntervalPlaceholder}
-        append={
-          <EuiSwitch
-            className={'eui-alignMiddle'}
-            label="Auto"
-            onChange={onAutoSwitchChange}
-            checked={autoChecked}
-            compressed
-          />
-        }
+        placeholder={selectIntervalPlaceholder}
       />
     </EuiFormRow>
   );

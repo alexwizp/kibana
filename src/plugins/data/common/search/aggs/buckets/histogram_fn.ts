@@ -28,7 +28,12 @@ const fnName = 'aggHistogram';
 type Input = any;
 type AggArgs = AggExpressionFunctionArgs<typeof BUCKET_TYPES.HISTOGRAM>;
 
-type Arguments = Assign<AggArgs, { extended_bounds?: string }>;
+type Arguments = Assign<
+  AggArgs,
+  {
+    extended_bounds?: string;
+  }
+>;
 
 type Output = AggExpressionType;
 type FunctionDefinition = ExpressionFunctionDefinition<typeof fnName, Input, Arguments, Output>;
@@ -66,9 +71,16 @@ export const aggHistogram = (): FunctionDefinition => ({
         defaultMessage: 'Field to use for this aggregation',
       }),
     },
-    interval: {
-      types: ['string'],
+    useAuto: {
+      types: ['boolean'],
       required: true,
+      help: i18n.translate('data.search.aggs.buckets.histogram.useAuto.help', {
+        defaultMessage:
+          'Specifies whether to calculate an auto interval or use the provided interval',
+      }),
+    },
+    interval: {
+      types: ['number'],
       help: i18n.translate('data.search.aggs.buckets.histogram.interval.help', {
         defaultMessage: 'Interval to use for this aggregation',
       }),
@@ -77,6 +89,12 @@ export const aggHistogram = (): FunctionDefinition => ({
       types: ['number'],
       help: i18n.translate('data.search.aggs.buckets.histogram.intervalBase.help', {
         defaultMessage: 'IntervalBase to use for this aggregation',
+      }),
+    },
+    maxBars: {
+      types: ['number'],
+      help: i18n.translate('data.search.aggs.buckets.histogram.maxBars.help', {
+        defaultMessage: 'Calculate interval to get approximately this many bars',
       }),
     },
     min_doc_count: {

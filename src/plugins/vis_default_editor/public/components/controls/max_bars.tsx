@@ -19,10 +19,11 @@
 
 import React, { useCallback, useEffect } from 'react';
 import { isUndefined } from 'lodash';
-import { EuiFormRow, EuiFieldNumber, EuiFieldNumberProps } from '@elastic/eui';
+import { EuiFormRow, EuiFieldNumber, EuiFieldNumberProps, EuiIconTip } from '@elastic/eui';
 import { FormattedMessage } from '@kbn/i18n/react';
 import { i18n } from '@kbn/i18n';
-
+import { useKibana } from '../../../../kibana_react/public';
+import { UI_SETTINGS } from '../../../../data/public';
 import { AggParamEditorProps } from '../agg_param_props';
 
 export interface SizeParamEditorProps extends AggParamEditorProps<number | ''> {
@@ -30,26 +31,43 @@ export interface SizeParamEditorProps extends AggParamEditorProps<number | ''> {
   disabled?: boolean;
 }
 
+const label = (
+  <>
+    <FormattedMessage
+      id="visDefaultEditor.controls.maxBars.maxBarsLabel"
+      defaultMessage="Max bars"
+    />{' '}
+    <EuiIconTip
+      position="right"
+      content={
+        <FormattedMessage
+          id="visDefaultEditor.controls.maxBars.maxBarsHelpText"
+          defaultMessage="Intervals will be selected automatically based on the available data. The maximum number of bars can never be greater than the Advanced Setting's {histogramMaxBars}"
+          values={{ histogramMaxBars: UI_SETTINGS.HISTOGRAM_MAX_BARS }}
+        />
+      }
+      type="questionInCircle"
+    />
+  </>
+);
+
 const autoPlaceholder = i18n.translate('visDefaultEditor.controls.maxBars.autoPlaceholder', {
   defaultMessage: 'Auto',
 });
 
 function MaxBarsParamEditor({
   disabled,
-  iconTip,
   value,
   setValue,
   showValidation,
   setValidity,
   setTouched,
 }: SizeParamEditorProps) {
-  const label = (
-    <>
-      <FormattedMessage id="visDefaultEditor.controls.maxSizeLabel" defaultMessage="Max Bars" />
-      {iconTip}
-    </>
-  );
-  const isValid = disabled || value === undefined || value === '' || Number(value) > 0;
+  const { services } = useKibana();
+
+  const uiSettingMaxBars = services.uiSettings?.get(UI_SETTINGS.HISTOGRAM_MAX_BARS);
+
+  const isValid = !disabled && Number(value) > 0 && Number(value) <= uiSettingMaxBars;
 
   useEffect(() => {
     setValidity(isValid);
@@ -70,6 +88,7 @@ function MaxBarsParamEditor({
       <EuiFieldNumber
         value={isUndefined(value) ? '' : value}
         step={1}
+        max={uiSettingMaxBars}
         placeholder={autoPlaceholder}
         onChange={onChange}
         fullWidth={true}

@@ -26,8 +26,8 @@ describe('agg_expression_functions', () => {
 
     test('fills in defaults when only required args are provided', () => {
       const actual = fn({
+        useAuto: true,
         field: 'field',
-        interval: '10',
       });
       expect(actual).toMatchInlineSnapshot(`
         Object {
@@ -40,10 +40,12 @@ describe('agg_expression_functions', () => {
               "extended_bounds": undefined,
               "field": "field",
               "has_extended_bounds": undefined,
-              "interval": "10",
+              "interval": undefined,
               "intervalBase": undefined,
               "json": undefined,
+              "maxBars": undefined,
               "min_doc_count": undefined,
+              "useAuto": true,
             },
             "schema": undefined,
             "type": "histogram",
@@ -54,9 +56,11 @@ describe('agg_expression_functions', () => {
 
     test('includes optional params when they are provided', () => {
       const actual = fn({
+        useAuto: false,
         field: 'field',
-        interval: '10',
+        interval: 10,
         intervalBase: 1,
+        maxBars: 100,
         min_doc_count: false,
         has_extended_bounds: false,
         extended_bounds: JSON.stringify({
@@ -80,7 +84,9 @@ describe('agg_expression_functions', () => {
             "interval": "10",
             "intervalBase": 1,
             "json": undefined,
+            "maxBars": 100,
             "min_doc_count": false,
+            "useAuto": false,
           },
           "schema": undefined,
           "type": "histogram",
@@ -90,8 +96,9 @@ describe('agg_expression_functions', () => {
 
     test('correctly parses json string argument', () => {
       const actual = fn({
+        useAuto: false,
         field: 'field',
-        interval: '10',
+        interval: 10,
         json: '{ "foo": true }',
       });
 
@@ -99,8 +106,9 @@ describe('agg_expression_functions', () => {
 
       expect(() => {
         fn({
+          useAuto: false,
           field: 'field',
-          interval: '10',
+          interval: 10,
           json: '/// intentionally malformed json ///',
         });
       }).toThrowErrorMatchingInlineSnapshot(`"Unable to parse json argument string"`);

@@ -22,18 +22,14 @@ import {
   CalculateHistogramIntervalParams,
 } from './histogram_calculate_interval';
 
-const getLargestPossibleInterval = (params: CalculateHistogramIntervalParams) => {
-  const diff = params.values!.max - params.values!.min;
-  return diff / params.maxBucketsUiSettings;
-};
-
 describe('calculateHistogramInterval', () => {
   describe('auto calculating mode', () => {
     let params: CalculateHistogramIntervalParams;
 
     beforeEach(() => {
       params = {
-        interval: 'auto',
+        useAuto: true,
+        interval: '',
         intervalBase: undefined,
         maxBucketsUiSettings: 100,
         maxBucketsUserInput: undefined,
@@ -51,13 +47,10 @@ describe('calculateHistogramInterval', () => {
           maxBucketsUserInput: 200,
           values: {
             min: 150,
-            max: 250,
+            max: 350,
           },
         };
-        const expectedInterval = getLargestPossibleInterval(p);
-
-        expect(expectedInterval).toBe(1);
-        expect(calculateHistogramInterval(p)).toBe(expectedInterval);
+        expect(calculateHistogramInterval(p)).toBe(2);
       });
 
       test('should correctly work for float numbers (small numbers)', () => {
@@ -96,10 +89,7 @@ describe('calculateHistogramInterval', () => {
             max: 100,
           },
         };
-        const expectedInterval = getLargestPossibleInterval(p);
-
-        expect(expectedInterval).toBe(1);
-        expect(calculateHistogramInterval(p)).toBe(expectedInterval);
+        expect(calculateHistogramInterval(p)).toBe(1);
       });
 
       test('should set intervals for integer numbers (diff less than maxBucketsUiSettings)', () => {

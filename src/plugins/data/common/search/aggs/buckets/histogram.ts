@@ -20,7 +20,7 @@
 import { get } from 'lodash';
 import { i18n } from '@kbn/i18n';
 
-import { isAutoInterval, KBN_FIELD_TYPES, UI_SETTINGS } from '../../../../common';
+import { KBN_FIELD_TYPES, UI_SETTINGS } from '../../../../common';
 import { AggTypesDependencies } from '../agg_types';
 import { BaseAggParams } from '../types';
 
@@ -47,7 +47,9 @@ export interface IBucketHistogramAggConfig extends IBucketAggConfig {
 
 export interface AggParamsHistogram extends BaseAggParams {
   field: string;
-  interval: string;
+  useAuto: boolean;
+  maxBars?: number;
+  interval?: number;
   intervalBase?: number;
   min_doc_count?: boolean;
   has_extended_bounds?: boolean;
@@ -102,7 +104,15 @@ export const getHistogramBucketAgg = ({
         write: () => {},
       },
       {
+        name: 'useAuto',
+        default: true,
+        write: () => {},
+      },
+      {
         name: 'interval',
+        shouldShow(agg) {
+          return !get(agg, 'params.useAuto');
+        },
         modifyAggConfigOnSearchRequestStart(
           aggConfig: IBucketHistogramAggConfig,
           searchSource: any,
@@ -150,6 +160,7 @@ export const getHistogramBucketAgg = ({
           const values = aggConfig.getAutoBounds();
 
           output.params.interval = calculateHistogramInterval({
+            useAuto: aggConfig.params.useAuto,
             values,
             interval: aggConfig.params.interval,
             maxBucketsUiSettings: getConfig(UI_SETTINGS.HISTOGRAM_MAX_BARS),
@@ -159,8 +170,9 @@ export const getHistogramBucketAgg = ({
       },
       {
         name: 'maxBars',
+        default: getConfig(UI_SETTINGS.HISTOGRAM_MAX_BARS),
         shouldShow(agg) {
-          return isAutoInterval(get(agg, 'params.interval'));
+          return get(agg, 'params.useAuto');
         },
         write: () => {},
       },

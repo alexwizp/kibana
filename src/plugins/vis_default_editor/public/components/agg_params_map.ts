@@ -44,6 +44,7 @@ const buckets = {
   [BUCKET_TYPES.HISTOGRAM]: {
     interval: controls.NumberIntervalParamEditor,
     maxBars: controls.MaxBarsParamEditor,
+    useAuto: controls.AutoIntervalParamEditor,
     min_doc_count: controls.MinDocCountParamEditor,
     has_extended_bounds: controls.HasExtendedBoundsParamEditor,
     extended_bounds: controls.ExtendedBoundsParamEditor,
