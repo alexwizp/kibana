@@ -24,8 +24,10 @@ import hjson from 'hjson';
 import { euiPaletteColorBlind } from '@elastic/eui';
 import { euiThemeVars } from '@kbn/ui-shared-deps/theme';
 import { i18n } from '@kbn/i18n';
-// @ts-ignore
-import { vega, vegaLite } from '../lib/vega';
+
+import * as vegaLite from 'vega-lite';
+import * as vega from 'vega';
+
 import { EsQueryParser } from './es_query_parser';
 import { Utils } from './utils';
 import { EmsFileParser } from './ems_file_parser';

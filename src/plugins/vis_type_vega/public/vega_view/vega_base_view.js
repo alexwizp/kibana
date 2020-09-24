@@ -20,7 +20,10 @@
 import $ from 'jquery';
 import moment from 'moment';
 import dateMath from '@elastic/datemath';
-import { vega, vegaLite } from '../lib/vega';
+
+import * as vegaLite from 'vega-lite';
+import * as vega from 'vega';
+
 import { Utils } from '../data_model/utils';
 import { euiPaletteColorBlind } from '@elastic/eui';
 import { i18n } from '@kbn/i18n';
