@@ -47,6 +47,8 @@
     "downlevelIteration": true,
     // import tslib helpers rather than inlining helpers for iteration or spreading, for instance
     "importHelpers": true,
+    // "resolveJsonModule" allows for importing, extracting types from and generating .json files.
+    "resolveJsonModule": true,
     // adding global typings
     "types": [
       "node",
