@@ -29555,10 +29555,10 @@ vega-scenegraph@^4.9.2, vega-scenegraph@~4.9.2:
     vega-scale "^7.1.1"
     vega-util "^1.15.2"
 
-vega-schema-url-parser@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/vega-schema-url-parser/-/vega-schema-url-parser-1.1.0.tgz#39168ec04e5468ce278a06c16ec0d126035a85b5"
-  integrity sha512-Tc85J2ofMZZOsxiqDM9sbvfsa+Vdo3GwNLjEEsPOsCDeYqsUHKAlc1IpbbhPLZ6jusyM9Lk0e1izF64GGklFDg==
+vega-schema-url-parser@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/vega-schema-url-parser/-/vega-schema-url-parser-2.1.0.tgz#847f9cf9f1624f36f8a51abc1adb41ebc6673cb4"
+  integrity sha512-JHT1PfOyVzOohj89uNunLPirs05Nf59isPT5gnwIkJph96rRgTIBJE7l7yLqndd7fLjr3P8JXHGAryRp74sCaQ==
 
 vega-selections@^5.1.4:
   version "5.1.4"
@@ -29589,12 +29589,12 @@ vega-time@^2.0.3, vega-time@^2.0.4, vega-time@~2.0.4:
     d3-time "^2.0.0"
     vega-util "^1.15.2"
 
-vega-tooltip@^0.12.0:
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/vega-tooltip/-/vega-tooltip-0.12.0.tgz#014b21b08ea5fe14eb59c9b6643614c77a3b3e47"
-  integrity sha512-0a1gYQ5NjdVxzSm8ameZGnSocDAW9lB3h6e2Us5L2oTlU6tYI6et1+7qU1yRCycBuUQ/oAUsNbeINVwvsV9UIg==
+vega-tooltip@^0.24.2:
+  version "0.24.2"
+  resolved "https://registry.yarnpkg.com/vega-tooltip/-/vega-tooltip-0.24.2.tgz#da55a171a96ea48a8ff135a728622e1cbb1152af"
+  integrity sha512-b7IeYQl/piNVsMmTliOgTnwSOhBs67KqoZ9UzP1I3XpH7TKbSuc3YHA7b1CSxkRR0hHKdradby4UI8c9rdH74w==
   dependencies:
-    vega-util "^1.7.0"
+    vega-util "^1.15.2"
 
 vega-transforms@~4.9.3:
   version "4.9.3"
@@ -29618,11 +29618,6 @@ vega-util@^1.15.2, vega-util@~1.15.2, vega-util@~1.15.3:
   version "1.15.3"
   resolved "https://registry.yarnpkg.com/vega-util/-/vega-util-1.15.3.tgz#b42b4fb11f32fbb57fb5cd116d4d3e1827d177aa"
   integrity sha512-NCbfCPMVgdP4geLrFtCDN9PTEXrgZgJBBLvpyos7HGv2xSe9bGjDCysv6qcueHrc1myEeCQzrHDFaShny6wXDg==
-
-vega-util@^1.7.0:
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/vega-util/-/vega-util-1.14.1.tgz#0fb614277764f98738ba0b80e5cdfbe663426183"
-  integrity sha512-pSKJ8OCkgfgHZDTljyj+gmGltgulceWbk1BV6LWrXqp6P3J8qPA/oZA8+a93YNApYxXZ3yzIVUDOo5O27xk0jw==
 
 vega-view-transforms@~4.5.8:
   version "4.5.8"
