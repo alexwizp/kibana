@@ -16,7 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
+import $ from 'jquery';
+import React from 'react';
+import ReactDOM from 'react-dom';
 import { i18n } from '@kbn/i18n';
 import { vega } from '../lib/vega';
 import { VegaBaseView } from './vega_base_view';
@@ -24,9 +26,33 @@ import { VegaMapLayer } from './vega_map_layer';
 import { getEmsTileLayerId, getUISettings } from '../services';
 import { lazyLoadMapsLegacyModules } from '../../../maps_legacy/public';
 
+import { ExperimentalMapLayerInfo } from '../components/experimental_map_vis_info';
+
 export class VegaMapView extends VegaBaseView {
+  _experimentalMapLayerInfo = undefined;
+
   constructor(opts) {
     super(opts);
+  }
+
+  async init() {
+    super.init();
+
+    if (!this._parser.hideWarnings) {
+      this._experimentalMapLayerInfo = $(
+        '<div class="vgaVis__experimentalMapLayerInfo">'
+      ).prependTo(this._$parentEl);
+
+      ReactDOM.render(<ExperimentalMapLayerInfo />, this._experimentalMapLayerInfo[0]);
+
+      this._addDestroyHandler(() => {
+        if (this._experimentalMapLayerInfo) {
+          ReactDOM.unmountComponentAtNode(this._experimentalMapLayerInfo[0]);
+          this._experimentalMessage.remove();
+          this._experimentalMessage = null;
+        }
+      });
+    }
   }
 
   async _initViewCustomizations() {

@@ -22,6 +22,10 @@
   }
 }
 
+.vgaVis__experimentalMapLayerInfo {
+  padding-bottom: 5px;
+}
+
 .vgaVis__controls {
   @include euiFontSizeS;
   display: flex;
