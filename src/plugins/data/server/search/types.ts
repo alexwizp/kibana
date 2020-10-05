@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import { Observable } from 'rxjs';
 import { KibanaRequest, RequestHandlerContext } from 'src/core/server';
 import {
   ISearchOptions,
@@ -91,6 +92,6 @@ export interface ISearchStrategy<
     context: RequestHandlerContext,
     request: SearchStrategyRequest,
     options?: ISearchOptions
-  ) => Promise<SearchStrategyResponse>;
+  ) => Observable<SearchStrategyResponse>;
   cancel?: (context: RequestHandlerContext, id: string) => Promise<void>;
 }

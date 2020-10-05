@@ -4,20 +4,22 @@
  * you may not use this file except in compliance with the Elastic License.
  */
 
-import { first } from 'rxjs/operators';
+import { first, map, tap, expand, mergeMap } from 'rxjs/operators';
 import { SearchResponse } from 'elasticsearch';
-import { Observable } from 'rxjs';
-import { TransportRequestPromise } from '@elastic/elasticsearch/lib/Transport';
+import { Observable, from, timer, EMPTY } from 'rxjs';
+import { ApiResponse } from '@elastic/elasticsearch';
 import { SharedGlobalConfig, RequestHandlerContext, Logger } from '../../../../../src/core/server';
 import {
-  getTotalLoaded,
   ISearchStrategy,
   SearchUsage,
   getDefaultSearchParams,
   getShardTimeout,
   toSnakeCase,
-  shimHitsTotal,
 } from '../../../../../src/plugins/data/server';
+import { IEnhancedEsSearchRequest } from '../../common';
+import { ISearchOptions, IEsSearchResponse } from '../../../../../src/plugins/data/common/search';
+import { IEnhancedEsSearchRequest, IAsyncSearchOptions } from '../../common';
+import { IEsSearchResponse } from '../../../../../src/plugins/data/common/search';
 import { IEnhancedEsSearchRequest } from '../../common';
 import {
   ISearchOptions,
@@ -25,8 +27,11 @@ import {
   isCompleteResponse,
 } from '../../../../../src/plugins/data/common/search';
 
-function isEnhancedEsSearchResponse(response: any): response is IEsSearchResponse {
-  return response.hasOwnProperty('isPartial') && response.hasOwnProperty('isRunning');
+interface AsyncSearchResponse {
+  is_partial: boolean;
+  is_running: boolean;
+  id?: string;
+  response: SearchResponse<any>;
 }
 
 export const enhancedEsSearchStrategyProvider = (
@@ -37,7 +42,7 @@ export const enhancedEsSearchStrategyProvider = (
   const search = async (
     context: RequestHandlerContext,
     request: IEnhancedEsSearchRequest,
-    options?: ISearchOptions
+    options: IAsyncSearchOptions = {}
   ) => {
     logger.debug(`search ${JSON.stringify(request.params) || request.id}`);
 
@@ -71,15 +76,13 @@ export const enhancedEsSearchStrategyProvider = (
     });
   };
 
-  async function asyncSearch(
+  async function runAsyncSearch(
     context: RequestHandlerContext,
     request: IEnhancedEsSearchRequest,
-    options?: ISearchOptions
-  ): Promise<IEsSearchResponse> {
-    let promise: TransportRequestPromise<any>;
+    options?: IAsyncSearchOptions
+  ): Promise<ApiResponse<AsyncSearchResponse>> {
     const esClient = context.core.elasticsearch.client.asCurrentUser;
-    const uiSettingsClient = await context.core.uiSettings.client;
-
+    const defaultParams = await getDefaultSearchParams(context.core.uiSettings.client);
     const asyncOptions = {
       waitForCompletionTimeout: '100ms', // Wait up to 100ms for the response to return
       keepAlive: '1m', // Extend the TTL for this search request by one minute
@@ -88,31 +91,60 @@ export const enhancedEsSearchStrategyProvider = (
     // If we have an ID, then just poll for that ID, otherwise send the entire request body
     if (!request.id) {
       const submitOptions = toSnakeCase({
+        requestCache: false,
         batchedReduceSize: 64, // Only report partial results every 64 shards; this should be reduced when we actually display partial results
-        ...(await getDefaultSearchParams(uiSettingsClient)),
+        ...defaultParams,
         ...asyncOptions,
         ...request.params,
       });
 
-      promise = esClient.asyncSearch.submit(submitOptions);
+      logger.debug('Submitting async search');
+      return esClient.asyncSearch.submit<AsyncSearchResponse>(submitOptions);
     } else {
-      promise = esClient.asyncSearch.get({
+      logger.debug(`Fetching async search ${request.id}`);
+      return esClient.asyncSearch.get<AsyncSearchResponse>({
         id: request.id,
         ...toSnakeCase(asyncOptions),
       });
     }
+  }
 
-    // Temporary workaround until https://github.com/elastic/elasticsearch-js/issues/1297
-    if (options?.abortSignal) options.abortSignal.addEventListener('abort', () => promise.abort());
-    const esResponse = await promise;
-    const { id, response, is_partial: isPartial, is_running: isRunning } = esResponse.body;
-    return {
-      id,
-      isPartial,
-      isRunning,
-      rawResponse: shimHitsTotal(response),
-      ...getTotalLoaded(response._shards),
-    };
+  function asyncSearch(
+    context: RequestHandlerContext,
+    request: IEnhancedEsSearchRequest,
+    options: IAsyncSearchOptions
+  ): Observable<IEsSearchResponse> {
+    return from(runAsyncSearch(context, request)).pipe(
+      expand((response: ApiResponse<AsyncSearchResponse>) => {
+        const { body } = response;
+        const { pollInterval = 1000 } = options;
+        if (options?.waitForCompletion && body.is_running && body.is_partial && body.id) {
+          return timer(pollInterval).pipe(
+            mergeMap(() => {
+              return from(runAsyncSearch(context, { ...request, id: body.id }));
+            })
+          );
+        } else {
+          return EMPTY;
+        }
+      }),
+      map((response: ApiResponse<AsyncSearchResponse>) => response.body),
+      tap({
+        next: (responseBody) => {
+          if (usage) usage.trackSuccess(responseBody.response.took);
+        },
+        error: (e) => {
+          logger.error(e);
+          if (usage) usage.trackError();
+        },
+      }),
+      map((responseBody) => ({
+        id: responseBody.id,
+        isPartial: responseBody.is_partial,
+        isRunning: responseBody.is_running,
+        rawResponse: responseBody.response,
+      }))
+    );
   }
 
   const rollupSearch = async function (
@@ -146,7 +178,6 @@ export const enhancedEsSearchStrategyProvider = (
     const response = esResponse.body as SearchResponse<any>;
     return {
       rawResponse: response,
-      ...getTotalLoaded(response._shards),
     };
   };
 
