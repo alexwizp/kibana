@@ -37,9 +37,9 @@ export const enhancedEsSearchStrategyProvider = (
   usage?: SearchUsage
 ): ISearchStrategy => {
   const search = async (
-    context: RequestHandlerContext,
     request: IEnhancedEsSearchRequest,
-    options?: ISearchOptions
+    options: ISearchOptions,
+    context: RequestHandlerContext
   ) => {
     logger.debug(`search ${JSON.stringify(request.params) || request.id}`);
 

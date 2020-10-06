@@ -27,10 +27,12 @@ export type ISearch = (
 
 export type ISearchGeneric = <
   SearchStrategyRequest extends IKibanaSearchRequest = IEsSearchRequest,
-  SearchStrategyResponse extends IKibanaSearchResponse = IEsSearchResponse
+  SearchStrategyResponse extends IKibanaSearchResponse = IEsSearchResponse,
+  SearchContext = unknown
 >(
   request: SearchStrategyRequest,
-  options?: ISearchOptions
+  options?: ISearchOptions,
+  context?: SearchContext
 ) => Observable<SearchStrategyResponse>;
 
 export interface IKibanaSearchResponse<RawResponse = any> {
