@@ -224,8 +224,21 @@ export {
   SearchUsage,
 } from './search';
 
+import {
+  doSearch,
+  getSearchParams,
+  toKibanaSearchResponse,
+  takeUntilPoolingAllData,
+} from './search';
+
 // Search namespace
 export const search = {
+  esSearch: {
+    doSearch,
+    getSearchParams,
+    toKibanaSearchResponse,
+    takeUntilPoolingAllData,
+  },
   aggs: {
     CidrMask,
     dateHistogramInterval,
