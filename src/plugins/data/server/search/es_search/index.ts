@@ -24,10 +24,12 @@ export * from './to_snake_case';
 export { shimAbortSignal } from './shim_abort_signal';
 
 export {
-  toKibanaSearchResponse,
   doSearch,
+  doAsyncSearch,
   getSearchParams,
-  takeUntilPoolingAllData,
+  includeTotalLoaded,
+  toKibanaSearchResponse,
+  takeUntilPollingComplete,
 } from './es_search_helpers';
 
 export { ES_SEARCH_STRATEGY, IEsSearchRequest, IEsSearchResponse } from '../../../common';

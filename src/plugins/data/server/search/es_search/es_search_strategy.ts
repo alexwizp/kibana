@@ -17,16 +17,17 @@
  * under the License.
  */
 import { Observable } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap, first } from 'rxjs/operators';
 import { SharedGlobalConfig, Logger } from 'kibana/server';
 import { SearchUsage } from '../collectors/usage';
 import {
   getSearchParams,
   doSearch,
+  doAsyncSearch,
+  includeTotalLoaded,
   toKibanaSearchResponse,
-  takeUntilPoolingAllData,
 } from './es_search_helpers';
-import { getShardTimeout, getTotalLoaded, ISearchStrategy } from '..';
+import { getShardTimeout, ISearchStrategy } from '..';
 
 export const esSearchStrategyProvider = (
   config$: Observable<SharedGlobalConfig>,
@@ -52,11 +53,10 @@ export const esSearchStrategyProvider = (
       }),
       switchMap(doSearch(context.core.elasticsearch.client.asCurrentUser, abortSignal, usage)),
       toKibanaSearchResponse(),
-      map((response) => ({
-        ...response,
-        ...getTotalLoaded(response.rawResponse._shards),
-      })),
-      takeUntilPoolingAllData()
+      includeTotalLoaded(),
+
+      // OSS search strategy doesn't support of async search. We should complete stream on getting first response.
+      first()
     );
   },
 });

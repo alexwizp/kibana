@@ -226,18 +226,22 @@ export {
 
 import {
   doSearch,
+  doAsyncSearch,
   getSearchParams,
+  includeTotalLoaded,
   toKibanaSearchResponse,
-  takeUntilPoolingAllData,
+  takeUntilPollingComplete,
 } from './search';
 
 // Search namespace
 export const search = {
   esSearch: {
     doSearch,
+    doAsyncSearch,
     getSearchParams,
+    includeTotalLoaded,
     toKibanaSearchResponse,
-    takeUntilPoolingAllData,
+    takeUntilPollingComplete,
   },
   aggs: {
     CidrMask,

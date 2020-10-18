@@ -43,10 +43,16 @@ export async function getDefaultSearchParams(uiSettingsClient: IUiSettingsClient
   };
 }
 
+export interface AsyncOptions {
+  waitForCompletion: boolean;
+  waitForCompletionTimeout: string;
+  keepAlive: string;
+}
+
 /**
  @internal
  */
-export const getAsyncOptions = () => ({
+export const getAsyncOptions = (): AsyncOptions => ({
   waitForCompletionTimeout: '100ms', // Wait up to 100ms for the response to return
   keepAlive: '1m', // Extend the TTL for this search request by one minute
 });
