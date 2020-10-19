@@ -147,6 +147,8 @@ export const includeTotalLoaded = () =>
   );
 
 export const takeUntilPollingComplete = (waitForCompletion: boolean) =>
-  takeWhile<IKibanaSearchResponse>(
-    (response) => waitForCompletion && Boolean(response.isPartial || response.isRunning)
+  takeWhile(
+    (response: IKibanaSearchResponse) =>
+      waitForCompletion && Boolean(response.isRunning || response.isPartial),
+    true
   );
