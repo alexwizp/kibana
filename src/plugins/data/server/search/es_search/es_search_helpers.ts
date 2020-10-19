@@ -16,11 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { from, of, timer } from 'rxjs';
-import { map, mergeMap, switchMap, takeWhile, expand } from 'rxjs/operators';
-import { SearchParams, SearchResponse } from 'elasticsearch';
+import { from, of, timer, Observable } from 'rxjs';
+import { map, mergeMap, switchMap, expand } from 'rxjs/operators';
+import { SearchParams, SearchResponse, ShardsResponse } from 'elasticsearch';
 import { ApiResponse } from '@elastic/elasticsearch';
 import { IUiSettingsClient } from 'src/core/server';
+import { Assign } from 'utility-types';
 
 import { ElasticsearchClient, SharedGlobalConfig } from 'kibana/server';
 import { shimAbortSignal } from './shim_abort_signal';
@@ -34,12 +35,13 @@ import { getTotalLoaded } from './get_total_loaded';
 export type KibanaSearchParams = Record<string, any>;
 
 export interface EsRawResponse extends SearchResponse<any> {
+  id?: string;
   is_partial?: boolean;
   is_running?: boolean;
 }
 
 const isPartialRequestData = (response: EsRawResponse) =>
-  Boolean(response.isPartial || response.isRunning);
+  Boolean(response.is_partial || response.is_running);
 
 export const getSearchParams = <Params extends KibanaSearchParams = KibanaSearchParams>(
   request: IEsSearchRequest,
@@ -52,7 +54,7 @@ export const getSearchParams = <Params extends KibanaSearchParams = KibanaSearch
     config: SharedGlobalConfig;
   }) => Params
 ) =>
-  mergeMap<SharedGlobalConfig, Promise<SearchParams>>(async (config) => {
+  mergeMap(async (config: SharedGlobalConfig) => {
     const defaultParams = {
       ...(await getDefaultSearchParams(uiSettingsClient)),
       ...request.params,
@@ -67,7 +69,7 @@ export const getSearchParams = <Params extends KibanaSearchParams = KibanaSearch
             })
           : defaultParams
       ),
-    };
+    } as SearchParams;
   });
 
 export const doSearch = <
@@ -100,32 +102,32 @@ export const doAsyncSearch = <
 >(
   client: ElasticsearchClient,
   request: IKibanaSearchRequest,
+  asyncOptions: AsyncOptions = getAsyncOptions(),
   abortSignal?: AbortSignal,
-  usage?: SearchUsage,
-  asyncOptions?: AsyncOptions = getAsyncOptions()
+  usage?: SearchUsage
 ) => ({ params, options }: { params: Params; options: Options }) => {
   const isCompleted = (response: EsRawResponse) =>
     asyncOptions.waitForCompletion && isPartialRequestData(response) && response.id;
 
-  const asyncSearch = (id: EsRawResponse['id']) =>
-    esClient.asyncSearch
-      .get({
+  const asyncSearch = (id: string): Observable<EsRawResponse> =>
+    from(
+      client.asyncSearch.get<EsRawResponse>({
         id,
         ...toSnakeCase(asyncOptions),
       })
-      .pipe(
-        expand<EsRawResponse>((response) =>
-          isCompleted(response)
-            ? of(val)
-            : timer(asyncOptions.pollInterval).pipe(switchMap(() => asyncSearch(id)))
-        )
-      );
+    ).pipe(
+      expand(({ body }: ApiResponse<EsRawResponse>) =>
+        isCompleted(body)
+          ? of(body)
+          : timer(asyncOptions!.pollInterval).pipe(switchMap(() => asyncSearch(body.id!)))
+      )
+    );
 
   return request.id
-    ? asyncSearch(id)
+    ? asyncSearch(request.id)
     : of({ params, options }).pipe(
         switchMap(doSearch(client, abortSignal, usage)),
-        expand((response) => (isCompleted(response) ? of(response) : asyncSearch(response.id)))
+        expand((response) => (isCompleted(response) ? of(response) : asyncSearch(response.id!)))
       );
 };
 
@@ -143,10 +145,10 @@ export const toKibanaSearchResponse = <
   );
 
 export const includeTotalLoaded = () =>
-  map<IKibanaSearchResponse>((response) => ({
-    ...response,
-    ...getTotalLoaded(response.rawResponse._shards),
-  }));
-
-export const takeUntilPollingComplete = () =>
-  takeWhile<IKibanaSearchResponse>((response) => isPartialRequestData(response), true);
+  map(
+    (response: IKibanaSearchResponse) =>
+      ({
+        ...response,
+        ...getTotalLoaded(response.rawResponse._shards),
+      } as Assign<IKibanaSearchResponse, ShardsResponse>)
+  );
