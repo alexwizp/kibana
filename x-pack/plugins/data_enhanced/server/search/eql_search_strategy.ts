@@ -4,8 +4,9 @@
  * you may not use this file except in compliance with the Elastic License.
  */
 
-import { Logger } from 'kibana/server';
+import { Logger, SharedGlobalConfig } from 'kibana/server';
 import { switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { search, getAsyncOptions } from '../../../../../src/plugins/data/server';
 
 import type { ISearchStrategy } from '../../../../../src/plugins/data/server';
@@ -15,6 +16,7 @@ import type {
 } from '../../common/search/types';
 
 export const eqlSearchStrategyProvider = (
+  config$: Observable<SharedGlobalConfig>,
   logger: Logger
 ): ISearchStrategy<EqlSearchStrategyRequest, EqlSearchStrategyResponse> => {
   return {
@@ -36,6 +38,14 @@ export const eqlSearchStrategyProvider = (
       } = search.esSearch;
       const asyncOptions = getAsyncOptions();
 
+      // todo: ???
+      const eqlSearch = context.core.elasticsearch.client.asCurrentUser.eql.search.bind(
+        context.core.elasticsearch.client.asCurrentUser.eql
+      );
+      const eqlGet = context.core.elasticsearch.client.asCurrentUser.eql.get.bind(
+        context.core.elasticsearch.client.asCurrentUser.eql
+      );
+
       return config$.pipe(
         getSearchArgs(
           request,
@@ -52,14 +62,7 @@ export const eqlSearchStrategyProvider = (
             };
           }
         ),
-        switchMap(
-          doPartialSearch(
-            context.core.elasticsearch.client.asCurrentUser.eql,
-            request,
-            asyncOptions,
-            options?.abortSignal
-          )
-        ),
+        switchMap(doPartialSearch(eqlSearch, eqlGet, request, asyncOptions, options?.abortSignal)),
         toKibanaSearchResponse(),
         takeUntilPollingComplete(asyncOptions.waitForCompletion)
       );

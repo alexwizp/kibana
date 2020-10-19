@@ -45,6 +45,11 @@ export const esSearchStrategyProvider = (
       throw new Error(`Unsupported index pattern type ${request.indexType}`);
     }
 
+    // todo: ???
+    const search = context.core.elasticsearch.client.asCurrentUser.search.bind(
+      context.core.elasticsearch.client.asCurrentUser
+    );
+
     return config$.pipe(
       getSearchArgs(request, context.core.uiSettings.client, (defaultParams, config) => {
         delete defaultParams.ignoreThrottled;
@@ -56,7 +61,7 @@ export const esSearchStrategyProvider = (
           },
         };
       }),
-      switchMap(doSearch(context.core.elasticsearch.client.asCurrentUser, abortSignal, usage)),
+      switchMap(doSearch(search, abortSignal, usage)),
       toKibanaSearchResponse(),
       includeTotalLoaded(),
 

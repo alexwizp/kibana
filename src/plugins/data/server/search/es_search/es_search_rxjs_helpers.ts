@@ -23,12 +23,14 @@ import type { SearchResponse, ShardsResponse } from 'elasticsearch';
 import type { ApiResponse } from '@elastic/elasticsearch';
 import type { IUiSettingsClient } from 'src/core/server';
 import type { Assign } from 'utility-types';
+import type { SharedGlobalConfig } from 'kibana/server';
+import type { TransportRequestPromise } from '@elastic/elasticsearch/lib/Transport';
 
-import type { ElasticsearchClient, SharedGlobalConfig } from 'kibana/server';
 import { shimAbortSignal } from './shim_abort_signal';
 import { toSnakeCase } from './to_snake_case';
 import { getAsyncOptions, getDefaultSearchParams } from './get_default_search_params';
 import { getTotalLoaded } from './get_total_loaded';
+import { isCompleteResponse } from '../../../common/search/es_search';
 
 import type { IEsSearchRequest } from '../../../common/search/es_search';
 import type { IKibanaSearchRequest, IKibanaSearchResponse } from '../../../common/search/types';
@@ -43,15 +45,19 @@ export interface EsRawResponse extends SearchResponse<any> {
   is_running?: boolean;
 }
 
-interface SearchArgs {
-  params: KibanaSearchParams;
-  options?: Record<string, any>;
-}
-
 type MapArgsFn = (params: KibanaSearchParams, config: SharedGlobalConfig) => SearchArgs;
+type SearchMethod = (
+  params: any,
+  options?: any
+) => TransportRequestPromise<ApiResponse<EsRawResponse>>;
 
 const isPartialRequestData = (response: EsRawResponse) =>
   Boolean(response.is_partial || response.is_running);
+
+export interface SearchArgs {
+  params: KibanaSearchParams;
+  options?: Record<string, any>;
+}
 
 export const getSearchArgs = (
   request: IEsSearchRequest,
@@ -68,7 +74,7 @@ export const getSearchArgs = (
   });
 
 export const doSearch = (
-  client: ElasticsearchClient,
+  searchClient: SearchMethod,
   abortSignal?: AbortSignal,
   usage?: SearchUsage
 ) => ({ params, options }: SearchArgs) =>
@@ -76,7 +82,7 @@ export const doSearch = (
     new Promise<EsRawResponse>(async (resolve, reject) => {
       try {
         const apiResponse = await shimAbortSignal(
-          client.search(toSnakeCase(params), options && toSnakeCase(options)),
+          searchClient(toSnakeCase(params), options && toSnakeCase(options)),
           abortSignal
         );
         const rawResponse = (apiResponse as ApiResponse<EsRawResponse>).body;
@@ -92,22 +98,25 @@ export const doSearch = (
   );
 
 export const doPartialSearch = (
-  client: ElasticsearchClient,
+  searchClient: SearchMethod,
+  partialSearchСlient: SearchMethod,
   request: IKibanaSearchRequest,
   asyncOptions: AsyncOptions = getAsyncOptions(),
   abortSignal?: AbortSignal,
-  usage?: SearchUsage,
-  getDoSearchStream: () => Observable<any>
+  usage?: SearchUsage
 ) => ({ params, options }: SearchArgs) => {
   const isCompleted = (response: EsRawResponse) =>
     asyncOptions.waitForCompletion && isPartialRequestData(response) && response.id;
 
   const partialSearch = (id: string): Observable<EsRawResponse> =>
     from(
-      client.asyncSearch.get<EsRawResponse>({
-        id,
-        ...toSnakeCase(asyncOptions),
-      })
+      partialSearchСlient(
+        {
+          id,
+          ...toSnakeCase(asyncOptions),
+        },
+        options
+      )
     ).pipe(
       expand(({ body }: ApiResponse<EsRawResponse>) =>
         isCompleted(body)
@@ -119,7 +128,7 @@ export const doPartialSearch = (
   return request.id
     ? partialSearch(request.id)
     : of({ params, options }).pipe(
-        switchMap(getDoSearchStream || doSearch(client, abortSignal, usage)),
+        switchMap(doSearch(searchClient, abortSignal, usage)),
         expand((response) => (isCompleted(response) ? of(response) : partialSearch(response.id!)))
       );
 };
@@ -148,7 +157,6 @@ export const includeTotalLoaded = () =>
 
 export const takeUntilPollingComplete = (waitForCompletion: boolean) =>
   takeWhile(
-    (response: IKibanaSearchResponse) =>
-      waitForCompletion && Boolean(response.isRunning || response.isPartial),
+    (response: IKibanaSearchResponse) => waitForCompletion && !isCompleteResponse(response),
     true
   );
