@@ -18,19 +18,22 @@
  */
 import { from, of, timer, Observable } from 'rxjs';
 import { map, mergeMap, switchMap, expand } from 'rxjs/operators';
-import { SearchParams, SearchResponse, ShardsResponse } from 'elasticsearch';
-import { ApiResponse } from '@elastic/elasticsearch';
-import { IUiSettingsClient } from 'src/core/server';
-import { Assign } from 'utility-types';
 
-import { ElasticsearchClient, SharedGlobalConfig } from 'kibana/server';
+import type { SearchResponse, ShardsResponse } from 'elasticsearch';
+import type { ApiResponse } from '@elastic/elasticsearch';
+import type { IUiSettingsClient } from 'src/core/server';
+import type { Assign } from 'utility-types';
+
+import type { ElasticsearchClient, SharedGlobalConfig } from 'kibana/server';
 import { shimAbortSignal } from './shim_abort_signal';
 import { toSnakeCase } from './to_snake_case';
-import { IEsSearchRequest } from '../../../common/search/es_search';
-import { IKibanaSearchRequest, IKibanaSearchResponse } from '../../../common/search/types';
-import { AsyncOptions, getAsyncOptions, getDefaultSearchParams } from './get_default_search_params';
-import { SearchUsage } from '../collectors';
+import { getAsyncOptions, getDefaultSearchParams } from './get_default_search_params';
 import { getTotalLoaded } from './get_total_loaded';
+
+import type { IEsSearchRequest } from '../../../common/search/es_search';
+import type { IKibanaSearchRequest, IKibanaSearchResponse } from '../../../common/search/types';
+import type { AsyncOptions } from './get_default_search_params';
+import type { SearchUsage } from '../collectors';
 
 export type KibanaSearchParams = Record<string, any>;
 
@@ -43,7 +46,7 @@ export interface EsRawResponse extends SearchResponse<any> {
 const isPartialRequestData = (response: EsRawResponse) =>
   Boolean(response.is_partial || response.is_running);
 
-export const getSearchParams = <Params extends KibanaSearchParams = KibanaSearchParams>(
+export const getSearchParams = (
   request: IEsSearchRequest,
   uiSettingsClient: IUiSettingsClient,
   mapParamsFn: ({
@@ -52,7 +55,7 @@ export const getSearchParams = <Params extends KibanaSearchParams = KibanaSearch
   }: {
     defaultParams: KibanaSearchParams;
     config: SharedGlobalConfig;
-  }) => Params
+  }) => KibanaSearchParams
 ) =>
   mergeMap(async (config: SharedGlobalConfig) => {
     const defaultParams = {
@@ -61,29 +64,27 @@ export const getSearchParams = <Params extends KibanaSearchParams = KibanaSearch
     };
 
     return {
-      params: toSnakeCase(
-        mapParamsFn
-          ? mapParamsFn({
-              defaultParams,
-              config,
-            })
-          : defaultParams
-      ),
-    } as SearchParams;
+      params: mapParamsFn
+        ? mapParamsFn({
+            defaultParams,
+            config,
+          })
+        : defaultParams,
+    };
   });
 
-export const doSearch = <
-  Params extends KibanaSearchParams = KibanaSearchParams,
-  Options = Record<string, any>
->(
+export const doSearch = (
   client: ElasticsearchClient,
   abortSignal?: AbortSignal,
   usage?: SearchUsage
-) => ({ params, options }: { params: Params; options: Options }) =>
+) => ({ params, options }: { params: KibanaSearchParams; options?: Record<string, any> }) =>
   from(
     new Promise<EsRawResponse>(async (resolve, reject) => {
       try {
-        const apiResponse = await shimAbortSignal(client.search(params, options), abortSignal);
+        const apiResponse = await shimAbortSignal(
+          client.search(toSnakeCase(params), options),
+          abortSignal
+        );
         const rawResponse = (apiResponse as ApiResponse<EsRawResponse>).body;
 
         usage?.trackSuccess(rawResponse.took);
@@ -96,16 +97,13 @@ export const doSearch = <
     })
   );
 
-export const doAsyncSearch = <
-  Params extends KibanaSearchParams = KibanaSearchParams,
-  Options = Record<string, any>
->(
+export const doAsyncSearch = (
   client: ElasticsearchClient,
   request: IKibanaSearchRequest,
   asyncOptions: AsyncOptions = getAsyncOptions(),
   abortSignal?: AbortSignal,
   usage?: SearchUsage
-) => ({ params, options }: { params: Params; options: Options }) => {
+) => ({ params, options }: { params: KibanaSearchParams; options?: Record<string, any> }) => {
   const isCompleted = (response: EsRawResponse) =>
     asyncOptions.waitForCompletion && isPartialRequestData(response) && response.id;
 

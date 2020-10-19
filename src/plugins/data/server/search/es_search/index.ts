@@ -29,7 +29,6 @@ export {
   getSearchParams,
   includeTotalLoaded,
   toKibanaSearchResponse,
-  takeUntilPollingComplete,
 } from './es_search_helpers';
 
 export { ES_SEARCH_STRATEGY, IEsSearchRequest, IEsSearchResponse } from '../../../common';

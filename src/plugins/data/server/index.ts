@@ -241,7 +241,6 @@ export const search = {
     getSearchParams,
     includeTotalLoaded,
     toKibanaSearchResponse,
-    takeUntilPollingComplete,
   },
   aggs: {
     CidrMask,

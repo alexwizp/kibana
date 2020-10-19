@@ -16,18 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import { Logger } from 'kibana/server';
 import { Observable } from 'rxjs';
 import { switchMap, first } from 'rxjs/operators';
-import { SharedGlobalConfig, Logger } from 'kibana/server';
+
+import type { SharedGlobalConfig } from 'kibana/server';
+
 import { SearchUsage } from '../collectors/usage';
 import {
   getSearchParams,
   doSearch,
-  doAsyncSearch,
   includeTotalLoaded,
   toKibanaSearchResponse,
 } from './es_search_helpers';
-import { getShardTimeout, ISearchStrategy } from '..';
+import { getShardTimeout } from '..';
+
+import type { ISearchStrategy } from '..';
 
 export const esSearchStrategyProvider = (
   config$: Observable<SharedGlobalConfig>,
@@ -43,13 +47,12 @@ export const esSearchStrategyProvider = (
 
     return config$.pipe(
       getSearchParams(request, context.core.uiSettings.client, ({ config, defaultParams }) => {
-        // ignoreThrottled is not supported in OSS
         delete defaultParams.ignoreThrottled;
 
         return {
           ...defaultParams,
           ...getShardTimeout(config),
-        } as Record<string, any>;
+        };
       }),
       switchMap(doSearch(context.core.elasticsearch.client.asCurrentUser, abortSignal, usage)),
       toKibanaSearchResponse(),
