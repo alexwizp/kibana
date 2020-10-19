@@ -24,11 +24,11 @@ import type { SharedGlobalConfig } from 'kibana/server';
 
 import { SearchUsage } from '../collectors/usage';
 import {
-  getSearchParams,
+  getSearchArgs,
   doSearch,
   includeTotalLoaded,
   toKibanaSearchResponse,
-} from './es_search_helpers';
+} from './es_search_rxjs_helpers';
 import { getShardTimeout } from '..';
 
 import type { ISearchStrategy } from '..';
@@ -46,12 +46,14 @@ export const esSearchStrategyProvider = (
     }
 
     return config$.pipe(
-      getSearchParams(request, context.core.uiSettings.client, ({ config, defaultParams }) => {
+      getSearchArgs(request, context.core.uiSettings.client, (defaultParams, config) => {
         delete defaultParams.ignoreThrottled;
 
         return {
-          ...defaultParams,
-          ...getShardTimeout(config),
+          params: {
+            ...defaultParams,
+            ...getShardTimeout(config),
+          },
         };
       }),
       switchMap(doSearch(context.core.elasticsearch.client.asCurrentUser, abortSignal, usage)),

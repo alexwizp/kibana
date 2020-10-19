@@ -226,8 +226,8 @@ export {
 
 import {
   doSearch,
-  doAsyncSearch,
-  getSearchParams,
+  doPartialSearch,
+  getSearchArgs,
   includeTotalLoaded,
   toKibanaSearchResponse,
   takeUntilPollingComplete,
@@ -237,10 +237,11 @@ import {
 export const search = {
   esSearch: {
     doSearch,
-    doAsyncSearch,
-    getSearchParams,
+    doPartialSearch,
+    getSearchArgs,
     includeTotalLoaded,
     toKibanaSearchResponse,
+    takeUntilPollingComplete,
   },
   aggs: {
     CidrMask,

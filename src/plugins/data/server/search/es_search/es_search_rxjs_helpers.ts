@@ -17,7 +17,7 @@
  * under the License.
  */
 import { from, of, timer, Observable } from 'rxjs';
-import { map, mergeMap, switchMap, expand } from 'rxjs/operators';
+import { map, mergeMap, switchMap, expand, takeWhile } from 'rxjs/operators';
 
 import type { SearchResponse, ShardsResponse } from 'elasticsearch';
 import type { ApiResponse } from '@elastic/elasticsearch';
@@ -43,46 +43,40 @@ export interface EsRawResponse extends SearchResponse<any> {
   is_running?: boolean;
 }
 
+interface SearchArgs {
+  params: KibanaSearchParams;
+  options?: Record<string, any>;
+}
+
+type MapArgsFn = (params: KibanaSearchParams, config: SharedGlobalConfig) => SearchArgs;
+
 const isPartialRequestData = (response: EsRawResponse) =>
   Boolean(response.is_partial || response.is_running);
 
-export const getSearchParams = (
+export const getSearchArgs = (
   request: IEsSearchRequest,
   uiSettingsClient: IUiSettingsClient,
-  mapParamsFn: ({
-    defaultParams,
-    config,
-  }: {
-    defaultParams: KibanaSearchParams;
-    config: SharedGlobalConfig;
-  }) => KibanaSearchParams
+  mapArgsFn: MapArgsFn
 ) =>
   mergeMap(async (config: SharedGlobalConfig) => {
-    const defaultParams = {
+    const params = {
       ...(await getDefaultSearchParams(uiSettingsClient)),
       ...request.params,
     };
 
-    return {
-      params: mapParamsFn
-        ? mapParamsFn({
-            defaultParams,
-            config,
-          })
-        : defaultParams,
-    };
+    return mapArgsFn ? mapArgsFn(params, config) : { params };
   });
 
 export const doSearch = (
   client: ElasticsearchClient,
   abortSignal?: AbortSignal,
   usage?: SearchUsage
-) => ({ params, options }: { params: KibanaSearchParams; options?: Record<string, any> }) =>
+) => ({ params, options }: SearchArgs) =>
   from(
     new Promise<EsRawResponse>(async (resolve, reject) => {
       try {
         const apiResponse = await shimAbortSignal(
-          client.search(toSnakeCase(params), options),
+          client.search(toSnakeCase(params), options && toSnakeCase(options)),
           abortSignal
         );
         const rawResponse = (apiResponse as ApiResponse<EsRawResponse>).body;
@@ -97,17 +91,18 @@ export const doSearch = (
     })
   );
 
-export const doAsyncSearch = (
+export const doPartialSearch = (
   client: ElasticsearchClient,
   request: IKibanaSearchRequest,
   asyncOptions: AsyncOptions = getAsyncOptions(),
   abortSignal?: AbortSignal,
-  usage?: SearchUsage
-) => ({ params, options }: { params: KibanaSearchParams; options?: Record<string, any> }) => {
+  usage?: SearchUsage,
+  getDoSearchStream: () => Observable<any>
+) => ({ params, options }: SearchArgs) => {
   const isCompleted = (response: EsRawResponse) =>
     asyncOptions.waitForCompletion && isPartialRequestData(response) && response.id;
 
-  const asyncSearch = (id: string): Observable<EsRawResponse> =>
+  const partialSearch = (id: string): Observable<EsRawResponse> =>
     from(
       client.asyncSearch.get<EsRawResponse>({
         id,
@@ -117,15 +112,15 @@ export const doAsyncSearch = (
       expand(({ body }: ApiResponse<EsRawResponse>) =>
         isCompleted(body)
           ? of(body)
-          : timer(asyncOptions!.pollInterval).pipe(switchMap(() => asyncSearch(body.id!)))
+          : timer(asyncOptions!.pollInterval).pipe(switchMap(() => partialSearch(body.id!)))
       )
     );
 
   return request.id
-    ? asyncSearch(request.id)
+    ? partialSearch(request.id)
     : of({ params, options }).pipe(
-        switchMap(doSearch(client, abortSignal, usage)),
-        expand((response) => (isCompleted(response) ? of(response) : asyncSearch(response.id!)))
+        switchMap(getDoSearchStream || doSearch(client, abortSignal, usage)),
+        expand((response) => (isCompleted(response) ? of(response) : partialSearch(response.id!)))
       );
 };
 
@@ -149,4 +144,9 @@ export const includeTotalLoaded = () =>
         ...response,
         ...getTotalLoaded(response.rawResponse._shards),
       } as Assign<IKibanaSearchResponse, ShardsResponse>)
+  );
+
+export const takeUntilPollingComplete = (waitForCompletion: boolean) =>
+  takeWhile<IKibanaSearchResponse>(
+    (response) => waitForCompletion && Boolean(response.isPartial || response.isRunning)
   );

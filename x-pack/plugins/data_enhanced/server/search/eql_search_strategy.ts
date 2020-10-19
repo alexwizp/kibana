@@ -4,18 +4,15 @@
  * you may not use this file except in compliance with the Elastic License.
  */
 
-import { from } from 'rxjs';
 import { Logger } from 'kibana/server';
-import { ApiResponse, TransportRequestPromise } from '@elastic/elasticsearch/lib/Transport';
+import { switchMap } from 'rxjs/operators';
+import { search, getAsyncOptions } from '../../../../../src/plugins/data/server';
 
-import {
-  getAsyncOptions,
-  getDefaultSearchParams,
-  ISearchStrategy,
-  toSnakeCase,
-  shimAbortSignal,
-} from '../../../../../src/plugins/data/server';
-import { EqlSearchStrategyRequest, EqlSearchStrategyResponse } from '../../common/search/types';
+import type { ISearchStrategy } from '../../../../../src/plugins/data/server';
+import type {
+  EqlSearchStrategyRequest,
+  EqlSearchStrategyResponse,
+} from '../../common/search/types';
 
 export const eqlSearchStrategyProvider = (
   logger: Logger
@@ -27,51 +24,45 @@ export const eqlSearchStrategyProvider = (
         id,
       });
     },
-    search: (request, options, context) =>
-      from(
-        new Promise<EqlSearchStrategyResponse>(async (resolve) => {
-          logger.debug(`_eql/search ${JSON.stringify(request.params) || request.id}`);
-          let promise: TransportRequestPromise<ApiResponse>;
-          const eqlClient = context.core.elasticsearch.client.asCurrentUser.eql;
-          const uiSettingsClient = await context.core.uiSettings.client;
-          const asyncOptions = getAsyncOptions();
-          const searchOptions = toSnakeCase({ ...request.options });
 
-          if (request.id) {
-            promise = eqlClient.get(
-              {
-                id: request.id,
-                ...toSnakeCase(asyncOptions),
+    search: (request, options, context) => {
+      logger.debug(`_eql/search ${JSON.stringify(request.params) || request.id}`);
+
+      const {
+        getSearchArgs,
+        doPartialSearch,
+        toKibanaSearchResponse,
+        takeUntilPollingComplete,
+      } = search.esSearch;
+      const asyncOptions = getAsyncOptions();
+
+      return config$.pipe(
+        getSearchArgs(
+          request,
+          context.core.uiSettings.client,
+          ({ ignoreThrottled, ignoreUnavailable }) => {
+            return {
+              params: {
+                ignoreThrottled,
+                ignoreUnavailable,
+                ...asyncOptions,
+                ...request.params,
               },
-              searchOptions
-            );
-          } else {
-            const { ignoreThrottled, ignoreUnavailable } = await getDefaultSearchParams(
-              uiSettingsClient
-            );
-            const searchParams = toSnakeCase({
-              ignoreThrottled,
-              ignoreUnavailable,
-              ...asyncOptions,
-              ...request.params,
-            });
-
-            promise = eqlClient.search(
-              searchParams as EqlSearchStrategyRequest['params'],
-              searchOptions
-            );
+              options: { ...request.options },
+            };
           }
-
-          const rawResponse = await shimAbortSignal(promise, options?.abortSignal);
-          const { id, is_partial: isPartial, is_running: isRunning } = rawResponse.body;
-
-          resolve({
-            id,
-            isPartial,
-            isRunning,
-            rawResponse,
-          });
-        })
-      ),
+        ),
+        switchMap(
+          doPartialSearch(
+            context.core.elasticsearch.client.asCurrentUser.eql,
+            request,
+            asyncOptions,
+            options?.abortSignal
+          )
+        ),
+        toKibanaSearchResponse(),
+        takeUntilPollingComplete(asyncOptions.waitForCompletion)
+      );
+    },
   };
 };

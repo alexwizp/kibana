@@ -25,10 +25,11 @@ export { shimAbortSignal } from './shim_abort_signal';
 
 export {
   doSearch,
-  doAsyncSearch,
-  getSearchParams,
+  doPartialSearch,
+  getSearchArgs,
   includeTotalLoaded,
   toKibanaSearchResponse,
-} from './es_search_helpers';
+  takeUntilPollingComplete,
+} from './es_search_rxjs_helpers';
 
 export { ES_SEARCH_STRATEGY, IEsSearchRequest, IEsSearchResponse } from '../../../common';
