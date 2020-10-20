@@ -101,7 +101,7 @@ export const doPartialSearch = (
   usage?: SearchUsage
 ) => ({ params, options }: SearchArgs) => {
   const isCompleted = (response: EsRawResponse) =>
-    waitForCompletion && !Boolean(response.is_partial || response.is_running);
+    !Boolean(response.is_partial || response.is_running);
 
   const partialSearch = (id: string): Observable<EsRawResponse> =>
     from(
@@ -114,9 +114,9 @@ export const doPartialSearch = (
       )
     ).pipe(
       switchMap(({ body }: ApiResponse<EsRawResponse>) => {
-        return isCompleted(body)
-          ? of(body)
-          : timer(1000).pipe(switchMap(() => partialSearch(body.id!)));
+        return waitForCompletion && !isCompleted(body) && body.id
+          ? timer(1000).pipe(switchMap(() => partialSearch(body.id!)))
+          : of(body);
       })
     );
 
@@ -125,7 +125,9 @@ export const doPartialSearch = (
     : of({ params, options }).pipe(
         switchMap(doSearch(searchClient, abortSignal, usage)),
         switchMap((response) => {
-          return !isCompleted(response) && response.id ? partialSearch(response.id) : of(response);
+          return waitForCompletion && !isCompleted(response) && response.id
+            ? partialSearch(response.id)
+            : of(response);
         })
       );
 };

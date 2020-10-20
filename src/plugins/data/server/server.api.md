@@ -695,6 +695,8 @@ export interface ISearchOptions {
     abortSignal?: AbortSignal;
     sessionId?: string;
     strategy?: string;
+    // (undocumented)
+    waitForCompletion?: boolean;
 }
 
 // Warning: (ae-missing-release-tag) "ISearchSetup" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -956,8 +958,8 @@ export interface RefreshInterval {
 export const search: {
     esSearch: {
         doSearch: (searchClient: (params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, import("@elastic/elasticsearch/lib/Transport").Context>>, abortSignal?: AbortSignal | undefined, usage?: import("./search").SearchUsage | undefined) => ({ params, options }: import("./search/es_search/es_search_rxjs_helpers").SearchArgs) => import("rxjs").Observable<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse>;
-        doPartialSearch: (searchClient: (params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, import("@elastic/elasticsearch/lib/Transport").Context>>, partialSearchСlient: (params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, import("@elastic/elasticsearch/lib/Transport").Context>>, request: import("../common").IKibanaSearchRequest<any>, asyncOptions?: import("./search").AsyncOptions, abortSignal?: AbortSignal | undefined, usage?: import("./search").SearchUsage | undefined) => ({ params, options }: import("./search/es_search/es_search_rxjs_helpers").SearchArgs) => import("rxjs").Observable<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse>;
-        getSearchArgs: (request: import("./search").IEsSearchRequest, uiSettingsClient: import("../../../core/server").IUiSettingsClient, mapArgsFn: (params: Record<string, any>, config: Readonly<{
+        doPartialSearch: (searchClient: (params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, import("@elastic/elasticsearch/lib/Transport").Context>>, partialSearchСlient: (params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, import("@elastic/elasticsearch/lib/Transport").Context>>, requestId: string | undefined, asyncOptions: import("./search").AsyncOptions, { abortSignal, waitForCompletion }: import("../common").ISearchOptions, usage?: import("./search").SearchUsage | undefined) => ({ params, options }: import("./search/es_search/es_search_rxjs_helpers").SearchArgs) => import("rxjs").Observable<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse>;
+        getSearchArgs: (uiSettingsClient: import("../../../core/server").IUiSettingsClient, mapArgsFn: (params: Record<string, any>, config: Readonly<{
             kibana: Readonly<{
                 readonly index: string;
                 readonly autocompleteTerminateAfter: Readonly<{
@@ -1180,7 +1182,7 @@ export const search: {
                     toString: (returnUnit?: "b" | "kb" | "mb" | "gb" | undefined) => string;
                 }>;
             }>;
-        }>) => import("./search/es_search/es_search_rxjs_helpers").SearchArgs) => import("rxjs").OperatorFunction<Readonly<{
+        }>) => import("./search/es_search/es_search_rxjs_helpers").SearchArgs | Promise<import("./search/es_search/es_search_rxjs_helpers").SearchArgs>) => import("rxjs").OperatorFunction<Readonly<{
             kibana: Readonly<{
                 readonly index: string;
                 readonly autocompleteTerminateAfter: Readonly<{
@@ -1406,7 +1408,7 @@ export const search: {
         }>, import("./search/es_search/es_search_rxjs_helpers").SearchArgs>;
         includeTotalLoaded: () => import("rxjs").OperatorFunction<import("../common").IKibanaSearchResponse<any>, Pick<Pick<import("../common").IKibanaSearchResponse<any>, "id" | "rawResponse" | "loaded" | "isRunning" | "isPartial"> & Pick<import("elasticsearch").ShardsResponse, "total"> & Pick<import("elasticsearch").ShardsResponse, "failed" | "successful" | "skipped">, "failed" | "id" | "total" | "successful" | "skipped" | "rawResponse" | "loaded" | "isRunning" | "isPartial">>;
         toKibanaSearchResponse: <Input extends import("./search/es_search/es_search_rxjs_helpers").EsRawResponse = import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, Output extends import("../common").IKibanaSearchResponse<Input> = import("../common").IKibanaSearchResponse<Input>>() => import("rxjs").OperatorFunction<Input, Output>;
-        takeUntilPollingComplete: (waitForCompletion: boolean) => import("rxjs").MonoTypeOperatorFunction<import("../common").IKibanaSearchResponse<any>>;
+        takeUntilPollingComplete: (waitForCompletion?: boolean) => import("rxjs").MonoTypeOperatorFunction<import("../common").IKibanaSearchResponse<any>>;
     };
     aggs: {
         CidrMask: typeof CidrMask;
