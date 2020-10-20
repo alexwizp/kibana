@@ -17,7 +17,7 @@
  * under the License.
  */
 import { from, of, timer, Observable } from 'rxjs';
-import { map, mergeMap, switchMap, expand, takeWhile } from 'rxjs/operators';
+import { map, mergeMap, switchMap, takeWhile } from 'rxjs/operators';
 
 import type { SearchResponse, ShardsResponse } from 'elasticsearch';
 import type { ApiResponse } from '@elastic/elasticsearch';
@@ -28,11 +28,10 @@ import type { TransportRequestPromise } from '@elastic/elasticsearch/lib/Transpo
 
 import { shimAbortSignal } from './shim_abort_signal';
 import { toSnakeCase } from './to_snake_case';
-import { getAsyncOptions, getDefaultSearchParams } from './get_default_search_params';
+import { getDefaultSearchParams } from './get_default_search_params';
 import { getTotalLoaded } from './get_total_loaded';
 import { isCompleteResponse, ISearchOptions } from '../../../common/search/es_search';
 
-import type { IEsSearchRequest } from '../../../common/search/es_search';
 import type { IKibanaSearchRequest, IKibanaSearchResponse } from '../../../common/search/types';
 import type { AsyncOptions } from './get_default_search_params';
 import type { SearchUsage } from '../collectors';
@@ -49,13 +48,11 @@ type MapArgsFn = (
   params: KibanaSearchParams,
   config: SharedGlobalConfig
 ) => SearchArgs | Promise<SearchArgs>;
+
 type SearchMethod = (
   params: any,
   options?: any
 ) => TransportRequestPromise<ApiResponse<EsRawResponse>>;
-
-const isPartialRequestData = (response: EsRawResponse) =>
-  Boolean(response.is_partial || response.is_running);
 
 export interface SearchArgs {
   params: KibanaSearchParams;
@@ -104,7 +101,7 @@ export const doPartialSearch = (
   usage?: SearchUsage
 ) => ({ params, options }: SearchArgs) => {
   const isCompleted = (response: EsRawResponse) =>
-    waitForCompletion && isPartialRequestData(response) && response.id;
+    waitForCompletion && !Boolean(response.is_partial || response.is_running);
 
   const partialSearch = (id: string): Observable<EsRawResponse> =>
     from(
@@ -116,16 +113,20 @@ export const doPartialSearch = (
         options
       )
     ).pipe(
-      expand(({ body }: ApiResponse<EsRawResponse>) =>
-        isCompleted(body) ? of(body) : timer(1000).pipe(switchMap(() => partialSearch(body.id!)))
-      )
+      switchMap(({ body }: ApiResponse<EsRawResponse>) => {
+        return isCompleted(body)
+          ? of(body)
+          : timer(1000).pipe(switchMap(() => partialSearch(body.id!)));
+      })
     );
 
-  return request.id
-    ? partialSearch(request.id)
+  return requestId
+    ? partialSearch(requestId)
     : of({ params, options }).pipe(
         switchMap(doSearch(searchClient, abortSignal, usage)),
-        expand((response) => (isCompleted(response) ? of(response) : partialSearch(response.id!)))
+        switchMap((response) => {
+          return !isCompleted(response) && response.id ? partialSearch(response.id) : of(response);
+        })
       );
 };
 
@@ -151,7 +152,7 @@ export const includeTotalLoaded = () =>
       } as Assign<IKibanaSearchResponse, ShardsResponse>)
   );
 
-export const takeUntilPollingComplete = (waitForCompletion: boolean) =>
+export const takeUntilPollingComplete = (waitForCompletion: boolean = false) =>
   takeWhile(
     (response: IKibanaSearchResponse) => waitForCompletion && !isCompleteResponse(response),
     true

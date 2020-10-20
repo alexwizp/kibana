@@ -70,7 +70,7 @@ export const enhancedEsSearchStrategyProvider = (
       esSearch.includeTotalLoaded(),
       map((response) => ({
         ...response,
-        rawResponse: shimHitsTotal(response.rawResponse),
+        rawResponse: shimHitsTotal(response.rawResponse.response),
       })),
       esSearch.takeUntilPollingComplete(options.waitForCompletion)
     );
