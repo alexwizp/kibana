@@ -30,42 +30,33 @@ export const eqlSearchStrategyProvider = (
     search: (request, options, context) => {
       logger.debug(`_eql/search ${JSON.stringify(request.params) || request.id}`);
 
-      const {
-        getSearchArgs,
-        doPartialSearch,
-        toKibanaSearchResponse,
-        takeUntilPollingComplete,
-      } = search.esSearch;
+      const { esSearch } = search;
       const asyncOptions = getAsyncOptions();
-      const waitForCompletion = request.params?.waitForCompletion ?? false;
-
-      // todo: ???
-      const eqlSearch = context.core.elasticsearch.client.asCurrentUser.eql.search.bind(
-        context.core.elasticsearch.client.asCurrentUser.eql
-      );
-      const eqlGet = context.core.elasticsearch.client.asCurrentUser.eql.get.bind(
-        context.core.elasticsearch.client.asCurrentUser.eql
-      );
 
       return config$.pipe(
-        getSearchArgs(
-          request,
+        esSearch.getSearchArgs(
           context.core.uiSettings.client,
-          ({ ignoreThrottled, ignoreUnavailable }) => {
-            return {
-              params: {
-                ignoreThrottled,
-                ignoreUnavailable,
-                ...asyncOptions,
-                ...request.params,
-              },
-              options: { ...request.options },
-            };
-          }
+          ({ ignoreThrottled, ignoreUnavailable }) => ({
+            params: {
+              ignoreThrottled,
+              ignoreUnavailable,
+              ...asyncOptions,
+              ...request.params,
+            },
+            options: { ...request.options },
+          })
         ),
-        switchMap(doPartialSearch(eqlSearch, eqlGet, request, asyncOptions, options?.abortSignal)),
-        toKibanaSearchResponse(),
-        takeUntilPollingComplete(waitForCompletion)
+        switchMap(
+          esSearch.doPartialSearch(
+            (...args) => context.core.elasticsearch.client.asCurrentUser.eql.search(...args),
+            (...args) => context.core.elasticsearch.client.asCurrentUser.eql.get(...args),
+            request.id,
+            asyncOptions,
+            options
+          )
+        ),
+        esSearch.toKibanaSearchResponse(),
+        esSearch.takeUntilPollingComplete(options.waitForCompletion)
       );
     },
   };

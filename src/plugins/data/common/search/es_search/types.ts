@@ -36,11 +36,12 @@ export interface ISearchOptions {
    * A session ID, grouping multiple search requests into a single session.
    */
   sessionId?: string;
+
+  waitForCompletion?: boolean;
 }
 
 export type ISearchRequestParams<T = Record<string, any>> = {
   trackTotalHits?: boolean;
-  waitForCompletion?: boolean;
 } & Search<T>;
 
 export interface IEsSearchRequest extends IKibanaSearchRequest<ISearchRequestParams> {

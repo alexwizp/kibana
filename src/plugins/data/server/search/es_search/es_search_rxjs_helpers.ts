@@ -30,7 +30,7 @@ import { shimAbortSignal } from './shim_abort_signal';
 import { toSnakeCase } from './to_snake_case';
 import { getAsyncOptions, getDefaultSearchParams } from './get_default_search_params';
 import { getTotalLoaded } from './get_total_loaded';
-import { isCompleteResponse } from '../../../common/search/es_search';
+import { isCompleteResponse, ISearchOptions } from '../../../common/search/es_search';
 
 import type { IEsSearchRequest } from '../../../common/search/es_search';
 import type { IKibanaSearchRequest, IKibanaSearchResponse } from '../../../common/search/types';
@@ -45,7 +45,10 @@ export interface EsRawResponse extends SearchResponse<any> {
   is_running?: boolean;
 }
 
-type MapArgsFn = (params: KibanaSearchParams, config: SharedGlobalConfig) => SearchArgs;
+type MapArgsFn = (
+  params: KibanaSearchParams,
+  config: SharedGlobalConfig
+) => SearchArgs | Promise<SearchArgs>;
 type SearchMethod = (
   params: any,
   options?: any
@@ -59,18 +62,13 @@ export interface SearchArgs {
   options?: Record<string, any>;
 }
 
-export const getSearchArgs = (
-  request: IEsSearchRequest,
-  uiSettingsClient: IUiSettingsClient,
-  mapArgsFn: MapArgsFn
-) =>
+export const getSearchArgs = (uiSettingsClient: IUiSettingsClient, mapArgsFn: MapArgsFn) =>
   mergeMap(async (config: SharedGlobalConfig) => {
     const params = {
       ...(await getDefaultSearchParams(uiSettingsClient)),
-      ...request.params,
     };
 
-    return mapArgsFn ? mapArgsFn(params, config) : { params };
+    return mapArgsFn ? await mapArgsFn(params, config) : { params };
   });
 
 export const doSearch = (
@@ -100,12 +98,11 @@ export const doSearch = (
 export const doPartialSearch = (
   searchClient: SearchMethod,
   partialSearchСlient: SearchMethod,
-  request: IKibanaSearchRequest,
-  asyncOptions: AsyncOptions = getAsyncOptions(),
-  abortSignal?: AbortSignal,
+  requestId: IKibanaSearchRequest['id'],
+  asyncOptions: AsyncOptions,
+  { abortSignal, waitForCompletion }: ISearchOptions,
   usage?: SearchUsage
 ) => ({ params, options }: SearchArgs) => {
-  const waitForCompletion = request.params?.waitForCompletion ?? false;
   const isCompleted = (response: EsRawResponse) =>
     waitForCompletion && isPartialRequestData(response) && response.id;
 
@@ -150,7 +147,7 @@ export const includeTotalLoaded = () =>
     (response: IKibanaSearchResponse) =>
       ({
         ...response,
-        ...getTotalLoaded(response.rawResponse._shards),
+        ...(response.rawResponse._shards && getTotalLoaded(response.rawResponse._shards)),
       } as Assign<IKibanaSearchResponse, ShardsResponse>)
   );
 
