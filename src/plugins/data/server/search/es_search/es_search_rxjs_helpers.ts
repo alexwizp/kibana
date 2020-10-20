@@ -139,6 +139,7 @@ export const toKibanaSearchResponse = <
   map<Input, Output>(
     (rawResponse: Input) =>
       ({
+        id: rawResponse.id,
         isPartial: rawResponse.is_partial || false,
         isRunning: rawResponse.is_running || false,
         rawResponse,
