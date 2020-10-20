@@ -105,8 +105,9 @@ export const doPartialSearch = (
   abortSignal?: AbortSignal,
   usage?: SearchUsage
 ) => ({ params, options }: SearchArgs) => {
+  const waitForCompletion = request.params?.waitForCompletion ?? false;
   const isCompleted = (response: EsRawResponse) =>
-    asyncOptions.waitForCompletion && isPartialRequestData(response) && response.id;
+    waitForCompletion && isPartialRequestData(response) && response.id;
 
   const partialSearch = (id: string): Observable<EsRawResponse> =>
     from(
@@ -119,9 +120,7 @@ export const doPartialSearch = (
       )
     ).pipe(
       expand(({ body }: ApiResponse<EsRawResponse>) =>
-        isCompleted(body)
-          ? of(body)
-          : timer(asyncOptions!.pollInterval).pipe(switchMap(() => partialSearch(body.id!)))
+        isCompleted(body) ? of(body) : timer(1000).pipe(switchMap(() => partialSearch(body.id!)))
       )
     );
 

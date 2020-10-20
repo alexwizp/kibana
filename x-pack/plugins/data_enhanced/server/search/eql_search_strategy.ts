@@ -37,6 +37,7 @@ export const eqlSearchStrategyProvider = (
         takeUntilPollingComplete,
       } = search.esSearch;
       const asyncOptions = getAsyncOptions();
+      const waitForCompletion = request.params?.waitForCompletion ?? false;
 
       // todo: ???
       const eqlSearch = context.core.elasticsearch.client.asCurrentUser.eql.search.bind(
@@ -64,7 +65,7 @@ export const eqlSearchStrategyProvider = (
         ),
         switchMap(doPartialSearch(eqlSearch, eqlGet, request, asyncOptions, options?.abortSignal)),
         toKibanaSearchResponse(),
-        takeUntilPollingComplete(asyncOptions.waitForCompletion)
+        takeUntilPollingComplete(waitForCompletion)
       );
     },
   };
