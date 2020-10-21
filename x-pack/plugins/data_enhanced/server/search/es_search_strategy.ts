@@ -5,20 +5,21 @@
  */
 
 import { from } from 'rxjs';
-import { first, switchMap, map } from 'rxjs/operators';
+import { first, switchMap, map, mergeMap } from 'rxjs/operators';
 import { SearchResponse } from 'elasticsearch';
 import { Observable } from 'rxjs';
 
 import {
   getTotalLoaded,
-  getDefaultSearchParams,
   getShardTimeout,
   toSnakeCase,
   shimHitsTotal,
-  getAsyncOptions,
   shimAbortSignal,
   search,
+  EsSearchArgs,
 } from '../../../../../src/plugins/data/server';
+
+import { getDefaultSearchParams, getAsyncOptions } from './get_default_search_params';
 
 import type { ISearchStrategy, SearchUsage } from '../../../../../src/plugins/data/server';
 import type { IEnhancedEsSearchRequest } from '../../common';
@@ -47,15 +48,21 @@ export const enhancedEsSearchStrategyProvider = (
     const asyncOptions = getAsyncOptions();
 
     return config$.pipe(
-      esSearch.getSearchArgs(context.core.uiSettings.client, (defaultParams) => ({
-        params: {
-          ...defaultParams,
-          // Only report partial results every 64 shards; this should be reduced when we actually display partial results
-          batchedReduceSize: 64,
-          ...asyncOptions,
-          ...request.params,
-        },
-      })),
+      mergeMap(
+        () =>
+          new Promise<EsSearchArgs>(async (resolve) => {
+            const defaultParams = await getDefaultSearchParams(context.core.uiSettings.client);
+
+            resolve({
+              params: {
+                ...defaultParams,
+                batchedReduceSize: 64,
+                ...asyncOptions,
+                ...request.params,
+              },
+            });
+          })
+      ),
       switchMap(
         esSearch.doPartialSearch(
           (...args) => context.core.elasticsearch.client.asCurrentUser.asyncSearch.submit(...args),

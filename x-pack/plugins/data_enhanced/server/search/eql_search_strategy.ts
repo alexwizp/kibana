@@ -5,9 +5,10 @@
  */
 
 import { Logger, SharedGlobalConfig } from 'kibana/server';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, mergeMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { search, getAsyncOptions } from '../../../../../src/plugins/data/server';
+import { search, EsSearchArgs } from '../../../../../src/plugins/data/server';
+import { getDefaultSearchParams, getAsyncOptions } from './get_default_search_params';
 
 import type { ISearchStrategy } from '../../../../../src/plugins/data/server';
 import type {
@@ -34,17 +35,23 @@ export const eqlSearchStrategyProvider = (
       const asyncOptions = getAsyncOptions();
 
       return config$.pipe(
-        esSearch.getSearchArgs(
-          context.core.uiSettings.client,
-          ({ ignoreThrottled, ignoreUnavailable }) => ({
-            params: {
-              ignoreThrottled,
-              ignoreUnavailable,
-              ...asyncOptions,
-              ...request.params,
-            },
-            options: { ...request.options },
-          })
+        mergeMap(
+          () =>
+            new Promise<EsSearchArgs>(async (resolve) => {
+              const { ignoreThrottled, ignoreUnavailable } = await getDefaultSearchParams(
+                context.core.uiSettings.client
+              );
+
+              resolve({
+                params: {
+                  ignoreThrottled,
+                  ignoreUnavailable,
+                  ...asyncOptions,
+                  ...request.params,
+                },
+                options: { ...request.options },
+              });
+            })
         ),
         switchMap(
           esSearch.doPartialSearch(

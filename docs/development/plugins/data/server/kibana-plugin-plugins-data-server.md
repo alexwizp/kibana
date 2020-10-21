@@ -43,6 +43,7 @@
 |  --- | --- |
 |  [AggParamOption](./kibana-plugin-plugins-data-server.aggparamoption.md) |  |
 |  [EsQueryConfig](./kibana-plugin-plugins-data-server.esqueryconfig.md) |  |
+|  [EsSearchArgs](./kibana-plugin-plugins-data-server.essearchargs.md) |  |
 |  [FieldDescriptor](./kibana-plugin-plugins-data-server.fielddescriptor.md) |  |
 |  [FieldFormatConfig](./kibana-plugin-plugins-data-server.fieldformatconfig.md) |  |
 |  [IEsSearchRequest](./kibana-plugin-plugins-data-server.iessearchrequest.md) |  |

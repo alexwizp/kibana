@@ -18,19 +18,15 @@
  */
 import { Logger } from 'kibana/server';
 import { Observable } from 'rxjs';
-import { switchMap, first } from 'rxjs/operators';
+import { switchMap, first, mergeMap } from 'rxjs/operators';
 
 import type { SharedGlobalConfig } from 'kibana/server';
 
 import { SearchUsage } from '../collectors/usage';
-import {
-  getSearchArgs,
-  doSearch,
-  includeTotalLoaded,
-  toKibanaSearchResponse,
-} from './es_search_rxjs_helpers';
-import { getShardTimeout } from '..';
+import { doSearch, includeTotalLoaded, toKibanaSearchResponse } from './es_search_rxjs_helpers';
+import type { EsSearchArgs } from './es_search_rxjs_helpers';
 
+import { getDefaultSearchParams, getShardTimeout } from '..';
 import type { ISearchStrategy } from '..';
 
 export const esSearchStrategyProvider = (
@@ -41,22 +37,23 @@ export const esSearchStrategyProvider = (
   search: (request, { abortSignal }, context) => {
     // Only default index pattern type is supported here.
     // See data_enhanced for other type support.
-    if (!!request.indexType) {
+    if (Boolean(request.indexType)) {
       throw new Error(`Unsupported index pattern type ${request.indexType}`);
     }
 
     return config$.pipe(
-      getSearchArgs(context.core.uiSettings.client, (defaultParams, config) => {
-        delete defaultParams.ignoreThrottled;
-
-        return {
-          params: {
-            ...defaultParams,
-            ...request.params,
-            ...getShardTimeout(config),
-          },
-        };
-      }),
+      mergeMap(
+        (config) =>
+          new Promise<EsSearchArgs>(async (resolve) => {
+            resolve({
+              params: {
+                ...(await getDefaultSearchParams(context.core.uiSettings.client)),
+                ...getShardTimeout(config),
+                ...request.params,
+              },
+            });
+          })
+      ),
       switchMap(
         doSearch(
           (...args) => context.core.elasticsearch.client.asCurrentUser.search(...args),

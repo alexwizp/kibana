@@ -16,24 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { from, of, timer, Observable } from 'rxjs';
-import { map, mergeMap, switchMap, takeWhile } from 'rxjs/operators';
+import { from, of, timer, Observable, EMPTY } from 'rxjs';
+import { map, switchMap, takeWhile, expand, mergeMap } from 'rxjs/operators';
 
 import type { SearchResponse, ShardsResponse } from 'elasticsearch';
 import type { ApiResponse } from '@elastic/elasticsearch';
-import type { IUiSettingsClient } from 'src/core/server';
 import type { Assign } from 'utility-types';
-import type { SharedGlobalConfig } from 'kibana/server';
 import type { TransportRequestPromise } from '@elastic/elasticsearch/lib/Transport';
 
 import { shimAbortSignal } from './shim_abort_signal';
 import { toSnakeCase } from './to_snake_case';
-import { getDefaultSearchParams } from './get_default_search_params';
 import { getTotalLoaded } from './get_total_loaded';
 import { isCompleteResponse, ISearchOptions } from '../../../common/search/es_search';
 
 import type { IKibanaSearchRequest, IKibanaSearchResponse } from '../../../common/search/types';
-import type { AsyncOptions } from './get_default_search_params';
 import type { SearchUsage } from '../collectors';
 
 export type KibanaSearchParams = Record<string, any>;
@@ -44,35 +40,21 @@ export interface EsRawResponse extends SearchResponse<any> {
   is_running?: boolean;
 }
 
-type MapArgsFn = (
-  params: KibanaSearchParams,
-  config: SharedGlobalConfig
-) => SearchArgs | Promise<SearchArgs>;
+export interface EsSearchArgs {
+  params: KibanaSearchParams;
+  options?: Record<string, any>;
+}
 
 type SearchMethod = (
   params: any,
   options?: any
 ) => TransportRequestPromise<ApiResponse<EsRawResponse>>;
 
-export interface SearchArgs {
-  params: KibanaSearchParams;
-  options?: Record<string, any>;
-}
-
-export const getSearchArgs = (uiSettingsClient: IUiSettingsClient, mapArgsFn: MapArgsFn) =>
-  mergeMap(async (config: SharedGlobalConfig) => {
-    const params = {
-      ...(await getDefaultSearchParams(uiSettingsClient)),
-    };
-
-    return mapArgsFn ? await mapArgsFn(params, config) : { params };
-  });
-
 export const doSearch = (
   searchClient: SearchMethod,
   abortSignal?: AbortSignal,
   usage?: SearchUsage
-) => ({ params, options }: SearchArgs) =>
+) => ({ params, options }: EsSearchArgs) =>
   from(
     new Promise<EsRawResponse>(async (resolve, reject) => {
       try {
@@ -96,14 +78,14 @@ export const doPartialSearch = (
   searchClient: SearchMethod,
   partialSearchСlient: SearchMethod,
   requestId: IKibanaSearchRequest['id'],
-  asyncOptions: AsyncOptions,
+  asyncOptions: Record<string, any>,
   { abortSignal, waitForCompletion }: ISearchOptions,
   usage?: SearchUsage
-) => ({ params, options }: SearchArgs) => {
+) => ({ params, options }: EsSearchArgs) => {
   const isCompleted = (response: EsRawResponse) =>
     !Boolean(response.is_partial || response.is_running);
 
-  const partialSearch = (id: string): Observable<EsRawResponse> =>
+  const partialSearch = (id: string): Observable<ApiResponse<EsRawResponse>> =>
     from(
       partialSearchСlient(
         {
@@ -113,23 +95,25 @@ export const doPartialSearch = (
         options
       )
     ).pipe(
-      switchMap(({ body }: ApiResponse<EsRawResponse>) => {
-        return waitForCompletion && !isCompleted(body) && body.id
-          ? timer(1000).pipe(switchMap(() => partialSearch(body.id!)))
-          : of(body);
+      expand(({ body }: ApiResponse<EsRawResponse>) => {
+        if (waitForCompletion && !isCompleted(body) && body.id) {
+          return timer(1000).pipe(mergeMap(() => partialSearch(body.id!)));
+        }
+        return EMPTY;
       })
     );
 
-  return requestId
+  return (requestId
     ? partialSearch(requestId)
     : of({ params, options }).pipe(
         switchMap(doSearch(searchClient, abortSignal, usage)),
-        switchMap((response) => {
-          return waitForCompletion && !isCompleted(response) && response.id
+        mergeMap((response) =>
+          waitForCompletion && !isCompleted(response) && response.id
             ? partialSearch(response.id)
-            : of(response);
-        })
-      );
+            : of(response)
+        )
+      )
+  ).pipe(map(({ body }) => body));
 };
 
 export const toKibanaSearchResponse = <

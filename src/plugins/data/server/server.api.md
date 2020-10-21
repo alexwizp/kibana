@@ -282,6 +282,18 @@ export interface EsQueryConfig {
     queryStringOptions: Record<string, any>;
 }
 
+// Warning: (ae-missing-release-tag) "EsSearchArgs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface EsSearchArgs {
+    // (undocumented)
+    options?: Record<string, any>;
+    // Warning: (ae-forgotten-export) The symbol "KibanaSearchParams" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    params: KibanaSearchParams;
+}
+
 // Warning: (ae-missing-release-tag) "FieldDescriptor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -358,18 +370,12 @@ export type Filter = {
     query?: any;
 };
 
-// Warning: (ae-forgotten-export) The symbol "AsyncOptions" needs to be exported by the entry point index.d.ts
-//
-// @internal (undocumented)
-export const getAsyncOptions: () => AsyncOptions;
-
 // Warning: (ae-forgotten-export) The symbol "IUiSettingsClient" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "getDefaultSearchParams" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function getDefaultSearchParams(uiSettingsClient: IUiSettingsClient): Promise<{
     maxConcurrentShardRequests: number | undefined;
-    ignoreThrottled: boolean;
     ignoreUnavailable: boolean;
     trackTotalHits: boolean;
 }>;
@@ -957,455 +963,8 @@ export interface RefreshInterval {
 // @public (undocumented)
 export const search: {
     esSearch: {
-        doSearch: (searchClient: (params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, import("@elastic/elasticsearch/lib/Transport").Context>>, abortSignal?: AbortSignal | undefined, usage?: import("./search").SearchUsage | undefined) => ({ params, options }: import("./search/es_search/es_search_rxjs_helpers").SearchArgs) => import("rxjs").Observable<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse>;
-        doPartialSearch: (searchClient: (params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, import("@elastic/elasticsearch/lib/Transport").Context>>, partialSearchСlient: (params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, import("@elastic/elasticsearch/lib/Transport").Context>>, requestId: string | undefined, asyncOptions: import("./search").AsyncOptions, { abortSignal, waitForCompletion }: import("../common").ISearchOptions, usage?: import("./search").SearchUsage | undefined) => ({ params, options }: import("./search/es_search/es_search_rxjs_helpers").SearchArgs) => import("rxjs").Observable<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse>;
-        getSearchArgs: (uiSettingsClient: import("../../../core/server").IUiSettingsClient, mapArgsFn: (params: Record<string, any>, config: Readonly<{
-            kibana: Readonly<{
-                readonly index: string;
-                readonly autocompleteTerminateAfter: Readonly<{
-                    clone: () => import("moment").Duration;
-                    humanize: {
-                        (argWithSuffix?: boolean | undefined, argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                        (argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                    };
-                    abs: () => import("moment").Duration;
-                    as: (units: import("moment").unitOfTime.Base) => number;
-                    get: (units: import("moment").unitOfTime.Base) => number;
-                    milliseconds: () => number;
-                    asMilliseconds: () => number;
-                    seconds: () => number;
-                    asSeconds: () => number;
-                    minutes: () => number;
-                    asMinutes: () => number;
-                    hours: () => number;
-                    asHours: () => number;
-                    days: () => number;
-                    asDays: () => number;
-                    weeks: () => number;
-                    asWeeks: () => number;
-                    months: () => number;
-                    asMonths: () => number;
-                    years: () => number;
-                    asYears: () => number;
-                    add: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    subtract: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    locale: {
-                        (): string;
-                        (locale: import("moment").LocaleSpecifier): import("moment").Duration;
-                    };
-                    localeData: () => import("moment").Locale;
-                    toISOString: () => string;
-                    toJSON: () => string;
-                    isValid: () => boolean;
-                    lang: {
-                        (locale: import("moment").LocaleSpecifier): import("moment").Moment;
-                        (): import("moment").Locale;
-                    };
-                    toIsoString: () => string;
-                }>;
-                readonly autocompleteTimeout: Readonly<{
-                    clone: () => import("moment").Duration;
-                    humanize: {
-                        (argWithSuffix?: boolean | undefined, argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                        (argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                    };
-                    abs: () => import("moment").Duration;
-                    as: (units: import("moment").unitOfTime.Base) => number;
-                    get: (units: import("moment").unitOfTime.Base) => number;
-                    milliseconds: () => number;
-                    asMilliseconds: () => number;
-                    seconds: () => number;
-                    asSeconds: () => number;
-                    minutes: () => number;
-                    asMinutes: () => number;
-                    hours: () => number;
-                    asHours: () => number;
-                    days: () => number;
-                    asDays: () => number;
-                    weeks: () => number;
-                    asWeeks: () => number;
-                    months: () => number;
-                    asMonths: () => number;
-                    years: () => number;
-                    asYears: () => number;
-                    add: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    subtract: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    locale: {
-                        (): string;
-                        (locale: import("moment").LocaleSpecifier): import("moment").Duration;
-                    };
-                    localeData: () => import("moment").Locale;
-                    toISOString: () => string;
-                    toJSON: () => string;
-                    isValid: () => boolean;
-                    lang: {
-                        (locale: import("moment").LocaleSpecifier): import("moment").Moment;
-                        (): import("moment").Locale;
-                    };
-                    toIsoString: () => string;
-                }>;
-            }>;
-            elasticsearch: Readonly<{
-                readonly requestTimeout: Readonly<{
-                    clone: () => import("moment").Duration;
-                    humanize: {
-                        (argWithSuffix?: boolean | undefined, argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                        (argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                    };
-                    abs: () => import("moment").Duration;
-                    as: (units: import("moment").unitOfTime.Base) => number;
-                    get: (units: import("moment").unitOfTime.Base) => number;
-                    milliseconds: () => number;
-                    asMilliseconds: () => number;
-                    seconds: () => number;
-                    asSeconds: () => number;
-                    minutes: () => number;
-                    asMinutes: () => number;
-                    hours: () => number;
-                    asHours: () => number;
-                    days: () => number;
-                    asDays: () => number;
-                    weeks: () => number;
-                    asWeeks: () => number;
-                    months: () => number;
-                    asMonths: () => number;
-                    years: () => number;
-                    asYears: () => number;
-                    add: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    subtract: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    locale: {
-                        (): string;
-                        (locale: import("moment").LocaleSpecifier): import("moment").Duration;
-                    };
-                    localeData: () => import("moment").Locale;
-                    toISOString: () => string;
-                    toJSON: () => string;
-                    isValid: () => boolean;
-                    lang: {
-                        (locale: import("moment").LocaleSpecifier): import("moment").Moment;
-                        (): import("moment").Locale;
-                    };
-                    toIsoString: () => string;
-                }>;
-                readonly shardTimeout: Readonly<{
-                    clone: () => import("moment").Duration;
-                    humanize: {
-                        (argWithSuffix?: boolean | undefined, argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                        (argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                    };
-                    abs: () => import("moment").Duration;
-                    as: (units: import("moment").unitOfTime.Base) => number;
-                    get: (units: import("moment").unitOfTime.Base) => number;
-                    milliseconds: () => number;
-                    asMilliseconds: () => number;
-                    seconds: () => number;
-                    asSeconds: () => number;
-                    minutes: () => number;
-                    asMinutes: () => number;
-                    hours: () => number;
-                    asHours: () => number;
-                    days: () => number;
-                    asDays: () => number;
-                    weeks: () => number;
-                    asWeeks: () => number;
-                    months: () => number;
-                    asMonths: () => number;
-                    years: () => number;
-                    asYears: () => number;
-                    add: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    subtract: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    locale: {
-                        (): string;
-                        (locale: import("moment").LocaleSpecifier): import("moment").Duration;
-                    };
-                    localeData: () => import("moment").Locale;
-                    toISOString: () => string;
-                    toJSON: () => string;
-                    isValid: () => boolean;
-                    lang: {
-                        (locale: import("moment").LocaleSpecifier): import("moment").Moment;
-                        (): import("moment").Locale;
-                    };
-                    toIsoString: () => string;
-                }>;
-                readonly pingTimeout: Readonly<{
-                    clone: () => import("moment").Duration;
-                    humanize: {
-                        (argWithSuffix?: boolean | undefined, argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                        (argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                    };
-                    abs: () => import("moment").Duration;
-                    as: (units: import("moment").unitOfTime.Base) => number;
-                    get: (units: import("moment").unitOfTime.Base) => number;
-                    milliseconds: () => number;
-                    asMilliseconds: () => number;
-                    seconds: () => number;
-                    asSeconds: () => number;
-                    minutes: () => number;
-                    asMinutes: () => number;
-                    hours: () => number;
-                    asHours: () => number;
-                    days: () => number;
-                    asDays: () => number;
-                    weeks: () => number;
-                    asWeeks: () => number;
-                    months: () => number;
-                    asMonths: () => number;
-                    years: () => number;
-                    asYears: () => number;
-                    add: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    subtract: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    locale: {
-                        (): string;
-                        (locale: import("moment").LocaleSpecifier): import("moment").Duration;
-                    };
-                    localeData: () => import("moment").Locale;
-                    toISOString: () => string;
-                    toJSON: () => string;
-                    isValid: () => boolean;
-                    lang: {
-                        (locale: import("moment").LocaleSpecifier): import("moment").Moment;
-                        (): import("moment").Locale;
-                    };
-                    toIsoString: () => string;
-                }>;
-            }>;
-            path: Readonly<{
-                readonly data: string;
-            }>;
-            savedObjects: Readonly<{
-                readonly maxImportPayloadBytes: Readonly<{
-                    isGreaterThan: (other: import("@kbn/config-schema").ByteSizeValue) => boolean;
-                    isLessThan: (other: import("@kbn/config-schema").ByteSizeValue) => boolean;
-                    isEqualTo: (other: import("@kbn/config-schema").ByteSizeValue) => boolean;
-                    getValueInBytes: () => number;
-                    toString: (returnUnit?: "b" | "kb" | "mb" | "gb" | undefined) => string;
-                }>;
-            }>;
-        }>) => import("./search/es_search/es_search_rxjs_helpers").SearchArgs | Promise<import("./search/es_search/es_search_rxjs_helpers").SearchArgs>) => import("rxjs").OperatorFunction<Readonly<{
-            kibana: Readonly<{
-                readonly index: string;
-                readonly autocompleteTerminateAfter: Readonly<{
-                    clone: () => import("moment").Duration;
-                    humanize: {
-                        (argWithSuffix?: boolean | undefined, argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                        (argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                    };
-                    abs: () => import("moment").Duration;
-                    as: (units: import("moment").unitOfTime.Base) => number;
-                    get: (units: import("moment").unitOfTime.Base) => number;
-                    milliseconds: () => number;
-                    asMilliseconds: () => number;
-                    seconds: () => number;
-                    asSeconds: () => number;
-                    minutes: () => number;
-                    asMinutes: () => number;
-                    hours: () => number;
-                    asHours: () => number;
-                    days: () => number;
-                    asDays: () => number;
-                    weeks: () => number;
-                    asWeeks: () => number;
-                    months: () => number;
-                    asMonths: () => number;
-                    years: () => number;
-                    asYears: () => number;
-                    add: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    subtract: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    locale: {
-                        (): string;
-                        (locale: import("moment").LocaleSpecifier): import("moment").Duration;
-                    };
-                    localeData: () => import("moment").Locale;
-                    toISOString: () => string;
-                    toJSON: () => string;
-                    isValid: () => boolean;
-                    lang: {
-                        (locale: import("moment").LocaleSpecifier): import("moment").Moment;
-                        (): import("moment").Locale;
-                    };
-                    toIsoString: () => string;
-                }>;
-                readonly autocompleteTimeout: Readonly<{
-                    clone: () => import("moment").Duration;
-                    humanize: {
-                        (argWithSuffix?: boolean | undefined, argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                        (argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                    };
-                    abs: () => import("moment").Duration;
-                    as: (units: import("moment").unitOfTime.Base) => number;
-                    get: (units: import("moment").unitOfTime.Base) => number;
-                    milliseconds: () => number;
-                    asMilliseconds: () => number;
-                    seconds: () => number;
-                    asSeconds: () => number;
-                    minutes: () => number;
-                    asMinutes: () => number;
-                    hours: () => number;
-                    asHours: () => number;
-                    days: () => number;
-                    asDays: () => number;
-                    weeks: () => number;
-                    asWeeks: () => number;
-                    months: () => number;
-                    asMonths: () => number;
-                    years: () => number;
-                    asYears: () => number;
-                    add: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    subtract: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    locale: {
-                        (): string;
-                        (locale: import("moment").LocaleSpecifier): import("moment").Duration;
-                    };
-                    localeData: () => import("moment").Locale;
-                    toISOString: () => string;
-                    toJSON: () => string;
-                    isValid: () => boolean;
-                    lang: {
-                        (locale: import("moment").LocaleSpecifier): import("moment").Moment;
-                        (): import("moment").Locale;
-                    };
-                    toIsoString: () => string;
-                }>;
-            }>;
-            elasticsearch: Readonly<{
-                readonly requestTimeout: Readonly<{
-                    clone: () => import("moment").Duration;
-                    humanize: {
-                        (argWithSuffix?: boolean | undefined, argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                        (argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                    };
-                    abs: () => import("moment").Duration;
-                    as: (units: import("moment").unitOfTime.Base) => number;
-                    get: (units: import("moment").unitOfTime.Base) => number;
-                    milliseconds: () => number;
-                    asMilliseconds: () => number;
-                    seconds: () => number;
-                    asSeconds: () => number;
-                    minutes: () => number;
-                    asMinutes: () => number;
-                    hours: () => number;
-                    asHours: () => number;
-                    days: () => number;
-                    asDays: () => number;
-                    weeks: () => number;
-                    asWeeks: () => number;
-                    months: () => number;
-                    asMonths: () => number;
-                    years: () => number;
-                    asYears: () => number;
-                    add: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    subtract: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    locale: {
-                        (): string;
-                        (locale: import("moment").LocaleSpecifier): import("moment").Duration;
-                    };
-                    localeData: () => import("moment").Locale;
-                    toISOString: () => string;
-                    toJSON: () => string;
-                    isValid: () => boolean;
-                    lang: {
-                        (locale: import("moment").LocaleSpecifier): import("moment").Moment;
-                        (): import("moment").Locale;
-                    };
-                    toIsoString: () => string;
-                }>;
-                readonly shardTimeout: Readonly<{
-                    clone: () => import("moment").Duration;
-                    humanize: {
-                        (argWithSuffix?: boolean | undefined, argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                        (argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                    };
-                    abs: () => import("moment").Duration;
-                    as: (units: import("moment").unitOfTime.Base) => number;
-                    get: (units: import("moment").unitOfTime.Base) => number;
-                    milliseconds: () => number;
-                    asMilliseconds: () => number;
-                    seconds: () => number;
-                    asSeconds: () => number;
-                    minutes: () => number;
-                    asMinutes: () => number;
-                    hours: () => number;
-                    asHours: () => number;
-                    days: () => number;
-                    asDays: () => number;
-                    weeks: () => number;
-                    asWeeks: () => number;
-                    months: () => number;
-                    asMonths: () => number;
-                    years: () => number;
-                    asYears: () => number;
-                    add: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    subtract: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    locale: {
-                        (): string;
-                        (locale: import("moment").LocaleSpecifier): import("moment").Duration;
-                    };
-                    localeData: () => import("moment").Locale;
-                    toISOString: () => string;
-                    toJSON: () => string;
-                    isValid: () => boolean;
-                    lang: {
-                        (locale: import("moment").LocaleSpecifier): import("moment").Moment;
-                        (): import("moment").Locale;
-                    };
-                    toIsoString: () => string;
-                }>;
-                readonly pingTimeout: Readonly<{
-                    clone: () => import("moment").Duration;
-                    humanize: {
-                        (argWithSuffix?: boolean | undefined, argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                        (argThresholds?: import("moment").argThresholdOpts | undefined): string;
-                    };
-                    abs: () => import("moment").Duration;
-                    as: (units: import("moment").unitOfTime.Base) => number;
-                    get: (units: import("moment").unitOfTime.Base) => number;
-                    milliseconds: () => number;
-                    asMilliseconds: () => number;
-                    seconds: () => number;
-                    asSeconds: () => number;
-                    minutes: () => number;
-                    asMinutes: () => number;
-                    hours: () => number;
-                    asHours: () => number;
-                    days: () => number;
-                    asDays: () => number;
-                    weeks: () => number;
-                    asWeeks: () => number;
-                    months: () => number;
-                    asMonths: () => number;
-                    years: () => number;
-                    asYears: () => number;
-                    add: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    subtract: (inp?: import("moment").DurationInputArg1, unit?: "s" | "day" | "hour" | "minute" | "month" | "second" | "year" | "years" | "quarter" | "quarters" | "months" | "week" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "m" | "h" | "d" | "w" | "M" | "y" | "millisecond" | "milliseconds" | "ms" | "Q" | undefined) => import("moment").Duration;
-                    locale: {
-                        (): string;
-                        (locale: import("moment").LocaleSpecifier): import("moment").Duration;
-                    };
-                    localeData: () => import("moment").Locale;
-                    toISOString: () => string;
-                    toJSON: () => string;
-                    isValid: () => boolean;
-                    lang: {
-                        (locale: import("moment").LocaleSpecifier): import("moment").Moment;
-                        (): import("moment").Locale;
-                    };
-                    toIsoString: () => string;
-                }>;
-            }>;
-            path: Readonly<{
-                readonly data: string;
-            }>;
-            savedObjects: Readonly<{
-                readonly maxImportPayloadBytes: Readonly<{
-                    isGreaterThan: (other: import("@kbn/config-schema").ByteSizeValue) => boolean;
-                    isLessThan: (other: import("@kbn/config-schema").ByteSizeValue) => boolean;
-                    isEqualTo: (other: import("@kbn/config-schema").ByteSizeValue) => boolean;
-                    getValueInBytes: () => number;
-                    toString: (returnUnit?: "b" | "kb" | "mb" | "gb" | undefined) => string;
-                }>;
-            }>;
-        }>, import("./search/es_search/es_search_rxjs_helpers").SearchArgs>;
+        doSearch: (searchClient: (params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, import("@elastic/elasticsearch/lib/Transport").Context>>, abortSignal?: AbortSignal | undefined, usage?: import("./search").SearchUsage | undefined) => ({ params, options }: import("./search").EsSearchArgs) => import("rxjs").Observable<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse>;
+        doPartialSearch: (searchClient: (params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, import("@elastic/elasticsearch/lib/Transport").Context>>, partialSearchСlient: (params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, import("@elastic/elasticsearch/lib/Transport").Context>>, requestId: string | undefined, asyncOptions: Record<string, any>, { abortSignal, waitForCompletion }: import("../common").ISearchOptions, usage?: import("./search").SearchUsage | undefined) => ({ params, options }: import("./search").EsSearchArgs) => import("rxjs").Observable<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse>;
         includeTotalLoaded: () => import("rxjs").OperatorFunction<import("../common").IKibanaSearchResponse<any>, Pick<Pick<import("../common").IKibanaSearchResponse<any>, "id" | "rawResponse" | "loaded" | "isRunning" | "isPartial"> & Pick<import("elasticsearch").ShardsResponse, "total"> & Pick<import("elasticsearch").ShardsResponse, "failed" | "successful" | "skipped">, "failed" | "id" | "total" | "successful" | "skipped" | "rawResponse" | "loaded" | "isRunning" | "isPartial">>;
         toKibanaSearchResponse: <Input extends import("./search/es_search/es_search_rxjs_helpers").EsRawResponse = import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, Output extends import("../common").IKibanaSearchResponse<Input> = import("../common").IKibanaSearchResponse<Input>>() => import("rxjs").OperatorFunction<Input, Output>;
         takeUntilPollingComplete: (waitForCompletion?: boolean) => import("rxjs").MonoTypeOperatorFunction<import("../common").IKibanaSearchResponse<any>>;
@@ -1591,19 +1150,19 @@ export function usageProvider(core: CoreSetup_2): SearchUsage;
 // src/plugins/data/server/index.ts:101:26 - (ae-forgotten-export) The symbol "TruncateFormat" needs to be exported by the entry point index.d.ts
 // src/plugins/data/server/index.ts:127:27 - (ae-forgotten-export) The symbol "isFilterable" needs to be exported by the entry point index.d.ts
 // src/plugins/data/server/index.ts:127:27 - (ae-forgotten-export) The symbol "isNestedField" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "CidrMask" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "dateHistogramInterval" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "InvalidEsCalendarIntervalError" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "InvalidEsIntervalFormatError" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "Ipv4Address" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "isValidEsInterval" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "isValidInterval" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "propFilter" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "toAbsoluteDates" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "getRequestInspectorStats" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "getResponseInspectorStats" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "tabifyAggResponse" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "tabifyGetColumns" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:236:20 - (ae-forgotten-export) The symbol "getRequestInspectorStats" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:236:20 - (ae-forgotten-export) The symbol "getResponseInspectorStats" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:236:20 - (ae-forgotten-export) The symbol "tabifyAggResponse" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:236:20 - (ae-forgotten-export) The symbol "tabifyGetColumns" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:245:1 - (ae-forgotten-export) The symbol "CidrMask" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:246:1 - (ae-forgotten-export) The symbol "dateHistogramInterval" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:255:1 - (ae-forgotten-export) The symbol "InvalidEsCalendarIntervalError" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:256:1 - (ae-forgotten-export) The symbol "InvalidEsIntervalFormatError" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:257:1 - (ae-forgotten-export) The symbol "Ipv4Address" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:261:1 - (ae-forgotten-export) The symbol "isValidEsInterval" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:262:1 - (ae-forgotten-export) The symbol "isValidInterval" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:266:1 - (ae-forgotten-export) The symbol "propFilter" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:269:1 - (ae-forgotten-export) The symbol "toAbsoluteDates" needs to be exported by the entry point index.d.ts
 // src/plugins/data/server/index_patterns/index_patterns_service.ts:50:14 - (ae-forgotten-export) The symbol "IndexPatternsService" needs to be exported by the entry point index.d.ts
 // src/plugins/data/server/plugin.ts:88:66 - (ae-forgotten-export) The symbol "DataEnhancements" needs to be exported by the entry point index.d.ts
 // src/plugins/data/server/search/types.ts:91:5 - (ae-forgotten-export) The symbol "ISearchStartSearchSource" needs to be exported by the entry point index.d.ts

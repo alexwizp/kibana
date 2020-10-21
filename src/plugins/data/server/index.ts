@@ -214,7 +214,6 @@ export {
   ISearchSetup,
   ISearchStart,
   toSnakeCase,
-  getAsyncOptions,
   getDefaultSearchParams,
   getShardTimeout,
   getTotalLoaded,
@@ -222,12 +221,12 @@ export {
   usageProvider,
   shimAbortSignal,
   SearchUsage,
+  EsSearchArgs,
 } from './search';
 
 import {
   doSearch,
   doPartialSearch,
-  getSearchArgs,
   includeTotalLoaded,
   toKibanaSearchResponse,
   takeUntilPollingComplete,
@@ -238,7 +237,6 @@ export const search = {
   esSearch: {
     doSearch,
     doPartialSearch,
-    getSearchArgs,
     includeTotalLoaded,
     toKibanaSearchResponse,
     takeUntilPollingComplete,
