@@ -10,19 +10,17 @@ import { SearchResponse } from 'elasticsearch';
 import { Observable } from 'rxjs';
 
 import {
-  getTotalLoaded,
   getShardTimeout,
-  toSnakeCase,
   shimHitsTotal,
-  shimAbortSignal,
   search,
-  EsSearchArgs,
+  DoSearchFnArgs,
 } from '../../../../../src/plugins/data/server';
 
 import { getDefaultSearchParams, getAsyncOptions } from './get_default_search_params';
 
 import type { ISearchStrategy, SearchUsage } from '../../../../../src/plugins/data/server';
 import type { IEnhancedEsSearchRequest } from '../../common';
+import { shimAbortSignal } from '../../../../../src/plugins/data/common/search';
 import type {
   ISearchOptions,
   IEsSearchResponse,
@@ -50,7 +48,7 @@ export const enhancedEsSearchStrategyProvider = (
     return config$.pipe(
       mergeMap(
         () =>
-          new Promise<EsSearchArgs>(async (resolve) => {
+          new Promise<DoSearchFnArgs>(async (resolve) => {
             const defaultParams = await getDefaultSearchParams(context.core.uiSettings.client);
 
             resolve({
@@ -69,8 +67,7 @@ export const enhancedEsSearchStrategyProvider = (
           (...args) => context.core.elasticsearch.client.asCurrentUser.asyncSearch.get(...args),
           request.id,
           asyncOptions,
-          options,
-          usage
+          options
         )
       ),
       esSearch.toKibanaSearchResponse(),
@@ -94,7 +91,7 @@ export const enhancedEsSearchStrategyProvider = (
     const { body, index, ...params } = request.params!;
     const method = 'POST';
     const path = encodeURI(`/${index}/_rollup_search`);
-    const querystring = toSnakeCase({
+    const querystring = esSearch.toSnakeCase({
       ...getShardTimeout(config),
       ...(await getDefaultSearchParams(uiSettingsClient)),
       ...params,
@@ -112,7 +109,7 @@ export const enhancedEsSearchStrategyProvider = (
     const response = esResponse.body as SearchResponse<any>;
     return {
       rawResponse: response,
-      ...getTotalLoaded(response._shards),
+      ...esSearch.getTotalLoaded(response._shards),
     };
   };
 

@@ -23,8 +23,12 @@ import { switchMap, first, mergeMap } from 'rxjs/operators';
 import type { SharedGlobalConfig } from 'kibana/server';
 
 import { SearchUsage } from '../collectors/usage';
-import { doSearch, includeTotalLoaded, toKibanaSearchResponse } from './es_search_rxjs_helpers';
-import type { EsSearchArgs } from './es_search_rxjs_helpers';
+import {
+  doSearch,
+  includeTotalLoaded,
+  toKibanaSearchResponse,
+  DoSearchFnArgs,
+} from '../../../common/search/es_search/es_search_rxjs_utils';
 
 import { getDefaultSearchParams, getShardTimeout } from '..';
 import type { ISearchStrategy } from '..';
@@ -36,7 +40,7 @@ export const esSearchStrategyProvider = (
 ): ISearchStrategy => ({
   search: (request, { abortSignal }, context) => {
     // Only default index pattern type is supported here.
-    // See data_enhanced for other type support.
+    // See data_enhanced for other t ype support.
     if (Boolean(request.indexType)) {
       throw new Error(`Unsupported index pattern type ${request.indexType}`);
     }
@@ -44,7 +48,7 @@ export const esSearchStrategyProvider = (
     return config$.pipe(
       mergeMap(
         (config) =>
-          new Promise<EsSearchArgs>(async (resolve) => {
+          new Promise<DoSearchFnArgs>(async (resolve) => {
             resolve({
               params: {
                 ...(await getDefaultSearchParams(context.core.uiSettings.client)),
@@ -57,8 +61,7 @@ export const esSearchStrategyProvider = (
       switchMap(
         doSearch(
           (...args) => context.core.elasticsearch.client.asCurrentUser.search(...args),
-          abortSignal,
-          usage
+          abortSignal
         )
       ),
       toKibanaSearchResponse(),

@@ -176,6 +176,15 @@ import {
   // tabify
   tabifyAggResponse,
   tabifyGetColumns,
+  // search
+  toSnakeCase,
+  shimAbortSignal,
+  doSearch,
+  doPartialSearch,
+  includeTotalLoaded,
+  toKibanaSearchResponse,
+  takeUntilPollingComplete,
+  getTotalLoaded,
 } from '../common';
 
 export {
@@ -207,39 +216,33 @@ export {
   TabbedAggColumn,
   TabbedAggRow,
   TabbedTable,
+  // search
+  DoSearchFnArgs,
 } from '../common';
 
 export {
   ISearchStrategy,
   ISearchSetup,
   ISearchStart,
-  toSnakeCase,
   getDefaultSearchParams,
   getShardTimeout,
-  getTotalLoaded,
   shimHitsTotal,
   usageProvider,
-  shimAbortSignal,
   SearchUsage,
-  EsSearchArgs,
-} from './search';
-
-import {
-  doSearch,
-  doPartialSearch,
-  includeTotalLoaded,
-  toKibanaSearchResponse,
-  takeUntilPollingComplete,
 } from './search';
 
 // Search namespace
 export const search = {
   esSearch: {
     doSearch,
+    toSnakeCase,
+    shimAbortSignal,
     doPartialSearch,
     includeTotalLoaded,
     toKibanaSearchResponse,
     takeUntilPollingComplete,
+    // utils:
+    getTotalLoaded,
   },
   aggs: {
     CidrMask,

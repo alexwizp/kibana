@@ -7,7 +7,7 @@
 import { Logger, SharedGlobalConfig } from 'kibana/server';
 import { switchMap, mergeMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { search, EsSearchArgs } from '../../../../../src/plugins/data/server';
+import { search, DoSearchFnArgs } from '../../../../../src/plugins/data/server';
 import { getDefaultSearchParams, getAsyncOptions } from './get_default_search_params';
 
 import type { ISearchStrategy } from '../../../../../src/plugins/data/server';
@@ -37,7 +37,7 @@ export const eqlSearchStrategyProvider = (
       return config$.pipe(
         mergeMap(
           () =>
-            new Promise<EsSearchArgs>(async (resolve) => {
+            new Promise<DoSearchFnArgs>(async (resolve) => {
               const { ignoreThrottled, ignoreUnavailable } = await getDefaultSearchParams(
                 context.core.uiSettings.client
               );

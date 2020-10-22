@@ -19,17 +19,5 @@
 
 export { esSearchStrategyProvider } from './es_search_strategy';
 export * from './get_default_search_params';
-export { getTotalLoaded } from './get_total_loaded';
-export * from './to_snake_case';
-export { shimAbortSignal } from './shim_abort_signal';
-
-export {
-  doSearch,
-  doPartialSearch,
-  includeTotalLoaded,
-  toKibanaSearchResponse,
-  takeUntilPollingComplete,
-  EsSearchArgs,
-} from './es_search_rxjs_helpers';
 
 export { ES_SEARCH_STRATEGY, IEsSearchRequest, IEsSearchResponse } from '../../../common';
