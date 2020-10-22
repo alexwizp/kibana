@@ -48,7 +48,6 @@ import { SearchResponse } from 'elasticsearch';
 import { SerializedFieldFormat as SerializedFieldFormat_2 } from 'src/plugins/expressions/common';
 import { ShardsResponse } from 'elasticsearch';
 import { ToastInputFields } from 'src/core/public/notifications';
-import { TransportRequestPromise } from '@elastic/elasticsearch/lib/Transport';
 import { Type } from '@kbn/config-schema';
 import { TypeOf } from '@kbn/config-schema';
 import { Unit } from '@elastic/datemath';
@@ -155,6 +154,16 @@ export const castEsToKbnFieldTypeName: (esType: ES_FIELD_TYPES | string) => KBN_
 //
 // @public (undocumented)
 export const config: PluginConfigDescriptor<ConfigSchema>;
+
+// Warning: (ae-missing-release-tag) "DoSearchFnArgs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface DoSearchFnArgs {
+    // (undocumented)
+    options?: Record<string, any>;
+    // (undocumented)
+    params: Record<string, any>;
+}
 
 // @public (undocumented)
 export enum ES_FIELD_TYPES {
@@ -282,18 +291,6 @@ export interface EsQueryConfig {
     queryStringOptions: Record<string, any>;
 }
 
-// Warning: (ae-missing-release-tag) "EsSearchArgs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export interface EsSearchArgs {
-    // (undocumented)
-    options?: Record<string, any>;
-    // Warning: (ae-forgotten-export) The symbol "KibanaSearchParams" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    params: KibanaSearchParams;
-}
-
 // Warning: (ae-missing-release-tag) "FieldDescriptor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -399,12 +396,6 @@ export function getTime(indexPattern: IIndexPattern | undefined, timeRange: Time
     fieldName?: string;
 }): import("../..").RangeFilter | undefined;
 
-// @internal
-export function getTotalLoaded({ total, failed, successful }: ShardsResponse): {
-    total: number;
-    loaded: number;
-};
-
 // Warning: (ae-missing-release-tag) "IAggConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -435,7 +426,7 @@ export interface IEsSearchRequest extends IKibanaSearchRequest<ISearchRequestPar
 // Warning: (ae-missing-release-tag) "IEsSearchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type IEsSearchResponse<Source = any> = IKibanaSearchResponse<SearchResponse<Source>>;
+export type IEsSearchResponse<Source = any> = IKibanaSearchResponse<Source>;
 
 // Warning: (ae-missing-release-tag) "IFieldFormatsRegistry" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -963,11 +954,15 @@ export interface RefreshInterval {
 // @public (undocumented)
 export const search: {
     esSearch: {
-        doSearch: (searchClient: (params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, import("@elastic/elasticsearch/lib/Transport").Context>>, abortSignal?: AbortSignal | undefined, usage?: import("./search").SearchUsage | undefined) => ({ params, options }: import("./search").EsSearchArgs) => import("rxjs").Observable<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse>;
-        doPartialSearch: (searchClient: (params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, import("@elastic/elasticsearch/lib/Transport").Context>>, partialSearchСlient: (params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, import("@elastic/elasticsearch/lib/Transport").Context>>, requestId: string | undefined, asyncOptions: Record<string, any>, { abortSignal, waitForCompletion }: import("../common").ISearchOptions, usage?: import("./search").SearchUsage | undefined) => ({ params, options }: import("./search").EsSearchArgs) => import("rxjs").Observable<import("./search/es_search/es_search_rxjs_helpers").EsRawResponse>;
+        doSearch: <SearchResponse extends import("../common").IEsRawSearchResponse<any> = import("../common").IEsRawSearchResponse<any>>(searchMethod: <SearchResponse_1 extends import("../common").IEsRawSearchResponse<any> = import("../common").IEsRawSearchResponse<any>>(params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<SearchResponse_1, import("@elastic/elasticsearch/lib/Transport").Context>>, abortSignal?: AbortSignal | undefined) => ({ params, options }: import("../common").DoSearchFnArgs) => import("rxjs").Observable<import("@elastic/elasticsearch").ApiResponse<SearchResponse, import("@elastic/elasticsearch/lib/Transport").Context>>;
+        toSnakeCase: typeof toSnakeCase;
+        shimAbortSignal: <TResponse = any>(promise: import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<TResponse>, signal: AbortSignal | undefined) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<TResponse>;
+        doPartialSearch: <SearchResponse_2 extends import("../common").IEsRawSearchResponse<any> = import("../common").IEsRawSearchResponse<any>>(searchMethod: <SearchResponse_1 extends import("../common").IEsRawSearchResponse<any> = import("../common").IEsRawSearchResponse<any>>(params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<SearchResponse_1, import("@elastic/elasticsearch/lib/Transport").Context>>, partialSearchMethod: <SearchResponse_1 extends import("../common").IEsRawSearchResponse<any> = import("../common").IEsRawSearchResponse<any>>(params: any, options?: any) => import("@elastic/elasticsearch/lib/Transport").TransportRequestPromise<import("@elastic/elasticsearch").ApiResponse<SearchResponse_1, import("@elastic/elasticsearch/lib/Transport").Context>>, requestId: string | undefined, asyncOptions: Record<string, any>, { abortSignal, waitForCompletion }: import("../common").ISearchOptions) => ({ params, options }: import("../common").DoSearchFnArgs) => import("rxjs").Observable<import("@elastic/elasticsearch").ApiResponse<SearchResponse_2, import("@elastic/elasticsearch/lib/Transport").Context>>;
+        trackSearchStatus: <SearchResponse_3 extends import("../common").IEsRawSearchResponse<any> = import("../common").IEsRawSearchResponse<any>>(logger: import("@kbn/logging/target/logger").Logger, usage?: import("./search").SearchUsage | undefined) => (source: import("rxjs").Observable<import("@elastic/elasticsearch").ApiResponse<SearchResponse_3, import("@elastic/elasticsearch/lib/Transport").Context>>) => import("rxjs").Observable<import("@elastic/elasticsearch").ApiResponse<SearchResponse_3, import("@elastic/elasticsearch/lib/Transport").Context>>;
         includeTotalLoaded: () => import("rxjs").OperatorFunction<import("../common").IKibanaSearchResponse<any>, Pick<Pick<import("../common").IKibanaSearchResponse<any>, "id" | "rawResponse" | "loaded" | "isRunning" | "isPartial"> & Pick<import("elasticsearch").ShardsResponse, "total"> & Pick<import("elasticsearch").ShardsResponse, "failed" | "successful" | "skipped">, "failed" | "id" | "total" | "successful" | "skipped" | "rawResponse" | "loaded" | "isRunning" | "isPartial">>;
-        toKibanaSearchResponse: <Input extends import("./search/es_search/es_search_rxjs_helpers").EsRawResponse = import("./search/es_search/es_search_rxjs_helpers").EsRawResponse, Output extends import("../common").IKibanaSearchResponse<Input> = import("../common").IKibanaSearchResponse<Input>>() => import("rxjs").OperatorFunction<Input, Output>;
+        toKibanaSearchResponse: <SearchResponse_4 extends import("../common").IEsRawSearchResponse<any> = import("../common").IEsRawSearchResponse<any>, KibanaResponse extends import("../common").IKibanaSearchResponse<any> = import("../common").IKibanaSearchResponse<import("@elastic/elasticsearch").ApiResponse<SearchResponse_4, import("@elastic/elasticsearch/lib/Transport").Context>>>() => import("rxjs").OperatorFunction<import("@elastic/elasticsearch").ApiResponse<SearchResponse_4, import("@elastic/elasticsearch/lib/Transport").Context>, KibanaResponse>;
         takeUntilPollingComplete: (waitForCompletion?: boolean) => import("rxjs").MonoTypeOperatorFunction<import("../common").IKibanaSearchResponse<any>>;
+        getTotalLoaded: typeof getTotalLoaded;
     };
     aggs: {
         CidrMask: typeof CidrMask;
@@ -1011,9 +1006,6 @@ export interface SearchUsage {
     // (undocumented)
     trackSuccess(duration: number): Promise<void>;
 }
-
-// @internal
-export const shimAbortSignal: <T extends TransportRequestPromise<unknown>>(promise: T, signal: AbortSignal | undefined) => T;
 
 // @internal
 export function shimHitsTotal(response: SearchResponse<any>): {
@@ -1076,11 +1068,6 @@ export type TimeRange = {
     to: string;
     mode?: 'absolute' | 'relative';
 };
-
-// Warning: (ae-missing-release-tag) "toSnakeCase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function toSnakeCase(obj: Record<string, any>): import("lodash").Dictionary<any>;
 
 // Warning: (ae-missing-release-tag) "UI_SETTINGS" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1150,19 +1137,21 @@ export function usageProvider(core: CoreSetup_2): SearchUsage;
 // src/plugins/data/server/index.ts:101:26 - (ae-forgotten-export) The symbol "TruncateFormat" needs to be exported by the entry point index.d.ts
 // src/plugins/data/server/index.ts:127:27 - (ae-forgotten-export) The symbol "isFilterable" needs to be exported by the entry point index.d.ts
 // src/plugins/data/server/index.ts:127:27 - (ae-forgotten-export) The symbol "isNestedField" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:236:20 - (ae-forgotten-export) The symbol "getRequestInspectorStats" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:236:20 - (ae-forgotten-export) The symbol "getResponseInspectorStats" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:236:20 - (ae-forgotten-export) The symbol "tabifyAggResponse" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:236:20 - (ae-forgotten-export) The symbol "tabifyGetColumns" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:245:1 - (ae-forgotten-export) The symbol "CidrMask" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:246:1 - (ae-forgotten-export) The symbol "dateHistogramInterval" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:255:1 - (ae-forgotten-export) The symbol "InvalidEsCalendarIntervalError" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:256:1 - (ae-forgotten-export) The symbol "InvalidEsIntervalFormatError" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:257:1 - (ae-forgotten-export) The symbol "Ipv4Address" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:261:1 - (ae-forgotten-export) The symbol "isValidEsInterval" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:262:1 - (ae-forgotten-export) The symbol "isValidInterval" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:266:1 - (ae-forgotten-export) The symbol "propFilter" needs to be exported by the entry point index.d.ts
-// src/plugins/data/server/index.ts:269:1 - (ae-forgotten-export) The symbol "toAbsoluteDates" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "getRequestInspectorStats" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "getResponseInspectorStats" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "tabifyAggResponse" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:237:20 - (ae-forgotten-export) The symbol "tabifyGetColumns" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:240:1 - (ae-forgotten-export) The symbol "toSnakeCase" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:247:1 - (ae-forgotten-export) The symbol "getTotalLoaded" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:250:1 - (ae-forgotten-export) The symbol "CidrMask" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:251:1 - (ae-forgotten-export) The symbol "dateHistogramInterval" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:260:1 - (ae-forgotten-export) The symbol "InvalidEsCalendarIntervalError" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:261:1 - (ae-forgotten-export) The symbol "InvalidEsIntervalFormatError" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:262:1 - (ae-forgotten-export) The symbol "Ipv4Address" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:266:1 - (ae-forgotten-export) The symbol "isValidEsInterval" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:267:1 - (ae-forgotten-export) The symbol "isValidInterval" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:271:1 - (ae-forgotten-export) The symbol "propFilter" needs to be exported by the entry point index.d.ts
+// src/plugins/data/server/index.ts:274:1 - (ae-forgotten-export) The symbol "toAbsoluteDates" needs to be exported by the entry point index.d.ts
 // src/plugins/data/server/index_patterns/index_patterns_service.ts:50:14 - (ae-forgotten-export) The symbol "IndexPatternsService" needs to be exported by the entry point index.d.ts
 // src/plugins/data/server/plugin.ts:88:66 - (ae-forgotten-export) The symbol "DataEnhancements" needs to be exported by the entry point index.d.ts
 // src/plugins/data/server/search/types.ts:91:5 - (ae-forgotten-export) The symbol "ISearchStartSearchSource" needs to be exported by the entry point index.d.ts

@@ -29,6 +29,7 @@ import {
   toKibanaSearchResponse,
   DoSearchFnArgs,
 } from '../../../common/search/es_search/es_search_rxjs_utils';
+import { trackSearchStatus } from './es_search_rxjs_utils';
 
 import { getDefaultSearchParams, getShardTimeout } from '..';
 import type { ISearchStrategy } from '..';
@@ -64,6 +65,7 @@ export const esSearchStrategyProvider = (
           abortSignal
         )
       ),
+      trackSearchStatus(logger, usage),
       toKibanaSearchResponse(),
       includeTotalLoaded(),
 

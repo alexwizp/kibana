@@ -70,6 +70,7 @@ export const enhancedEsSearchStrategyProvider = (
           options
         )
       ),
+      esSearch.trackSearchStatus(logger, usage),
       esSearch.toKibanaSearchResponse(),
       esSearch.includeTotalLoaded(),
       map((response) => ({

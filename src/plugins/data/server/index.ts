@@ -231,6 +231,8 @@ export {
   SearchUsage,
 } from './search';
 
+import { trackSearchStatus } from './search';
+
 // Search namespace
 export const search = {
   esSearch: {
@@ -238,6 +240,7 @@ export const search = {
     toSnakeCase,
     shimAbortSignal,
     doPartialSearch,
+    trackSearchStatus,
     includeTotalLoaded,
     toKibanaSearchResponse,
     takeUntilPollingComplete,
