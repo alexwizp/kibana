@@ -32,9 +32,11 @@ export const trackSearchStatus = <
   new Observable<ApiResponse<SearchResponse>>((observer) =>
     source.subscribe({
       next(response) {
-        if (response) {
-          logger.debug(`trackSearchStatus:next  ${response.body.response.took}`);
-          usage?.trackSuccess(response.body.response.took);
+        const trackSuccessData = response?.body.response?.took;
+
+        if (trackSuccessData) {
+          logger.debug(`trackSearchStatus:next  ${trackSuccessData}`);
+          usage?.trackSuccess(trackSuccessData);
         }
         observer.next(response);
       },
