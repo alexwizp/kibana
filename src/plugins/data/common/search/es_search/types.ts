@@ -55,4 +55,4 @@ export interface IEsRawSearchResponse<Source = any> {
   response: SearchResponse<Source>;
 }
 
-export type IEsSearchResponse<Source = any> = IKibanaSearchResponse<Source>;
+export type IEsSearchResponse<Source = any> = IKibanaSearchResponse<SearchResponse<Source>>;
