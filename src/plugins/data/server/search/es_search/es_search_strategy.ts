@@ -65,8 +65,8 @@ export const esSearchStrategyProvider = (
           abortSignal
         )
       ),
-      trackSearchStatus(logger, usage),
       toKibanaSearchResponse(),
+      trackSearchStatus(logger, usage),
       includeTotalLoaded(),
 
       // OSS search strategy doesn't support of async search. We should complete stream on getting first response.

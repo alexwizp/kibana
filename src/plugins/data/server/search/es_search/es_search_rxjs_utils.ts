@@ -16,23 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { ApiResponse } from '@elastic/elasticsearch';
 import { Observable } from 'rxjs';
 
 import { Logger } from 'kibana/server';
 import { SearchUsage } from '../collectors';
-import { IEsRawSearchResponse } from '../../../common/search/es_search';
+import { IKibanaSearchResponse } from '../../../common/search';
 
 export const trackSearchStatus = <
-  SearchResponse extends IEsRawSearchResponse = IEsRawSearchResponse
+  KibanaResponse extends IKibanaSearchResponse = IKibanaSearchResponse
 >(
   logger: Logger,
   usage?: SearchUsage
-) => (source: Observable<ApiResponse<SearchResponse>>) =>
-  new Observable<ApiResponse<SearchResponse>>((observer) =>
+) => (source: Observable<KibanaResponse>) =>
+  new Observable<KibanaResponse>((observer) =>
     source.subscribe({
       next(response) {
-        const trackSuccessData = response?.body.response?.took;
+        const trackSuccessData = response.rawResponse.took;
 
         if (trackSuccessData) {
           logger.debug(`trackSearchStatus:next  ${trackSuccessData}`);

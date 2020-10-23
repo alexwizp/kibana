@@ -70,13 +70,13 @@ export const enhancedEsSearchStrategyProvider = (
           options
         )
       ),
-      esSearch.trackSearchStatus(logger, usage),
       esSearch.toKibanaSearchResponse(),
-      esSearch.includeTotalLoaded(),
       map((response) => ({
         ...response,
-        rawResponse: shimHitsTotal(response.rawResponse.response),
+        rawResponse: shimHitsTotal(response.rawResponse.response!),
       })),
+      esSearch.trackSearchStatus(logger, usage),
+      esSearch.includeTotalLoaded(),
       esSearch.takeUntilPollingComplete(options.waitForCompletion)
     );
   }

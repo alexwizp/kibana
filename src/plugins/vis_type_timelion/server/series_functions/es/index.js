@@ -19,6 +19,7 @@
 
 import { i18n } from '@kbn/i18n';
 import _ from 'lodash';
+import { map } from 'rxjs/operators';
 import Datasource from '../../lib/classes/datasource';
 import buildRequest from './lib/build_request';
 import toSeriesList from './lib/agg_response_to_series_list';
@@ -126,8 +127,11 @@ export default new Datasource('es', {
     }
 
     const esShardTimeout = tlConfig.esShardTimeout;
+
     const body = buildRequest(config, tlConfig, scriptedFields, esShardTimeout);
+
     const deps = (await tlConfig.getStartServices())[1];
+
     const resp = await deps.data.search
       .search(
         body,
@@ -136,8 +140,14 @@ export default new Datasource('es', {
         },
         tlConfig.context
       )
+      .pipe(
+        map((data) => {
+          console.log('!!timelion!!> partial');
+          return data;
+        })
+      )
       .toPromise();
-
+    console.log('final');
     if (!resp.rawResponse._shards.total) {
       throw new Error(
         i18n.translate('timelion.serverSideErrors.esFunction.indexNotFoundErrorMessage', {

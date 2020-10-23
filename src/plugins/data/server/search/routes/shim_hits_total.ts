@@ -27,10 +27,7 @@ import { SearchResponse } from 'elasticsearch';
  * @internal
  */
 export function shimHitsTotal(response: SearchResponse<any>) {
-  if (response?.hits) {
-    const total = (response.hits?.total as any)?.value ?? response.hits?.total;
-    const hits = { ...response.hits, total };
-    return { ...response, hits };
-  }
-  return response;
+  const total = (response.hits?.total as any)?.value ?? response.hits?.total;
+  const hits = { ...response.hits, total };
+  return { ...response, hits };
 }

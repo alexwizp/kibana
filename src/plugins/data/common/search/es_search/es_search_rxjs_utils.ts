@@ -103,7 +103,7 @@ export const doPartialSearch = <SearchResponse extends IEsRawSearchResponse = IE
 
 export const toKibanaSearchResponse = <
   SearchResponse extends IEsRawSearchResponse = IEsRawSearchResponse,
-  KibanaResponse extends IKibanaSearchResponse = IKibanaSearchResponse<ApiResponse<SearchResponse>>
+  KibanaResponse extends IKibanaSearchResponse = IKibanaSearchResponse<SearchResponse>
 >() =>
   map<ApiResponse<SearchResponse>, KibanaResponse>(
     (response) =>

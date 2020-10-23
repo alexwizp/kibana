@@ -48,11 +48,11 @@ export interface IEsSearchRequest extends IKibanaSearchRequest<ISearchRequestPar
   indexType?: string;
 }
 
-export interface IEsRawSearchResponse<Source = any> {
+export interface IEsRawSearchResponse<Source = any> extends SearchResponse<Source> {
   id?: string;
   is_partial?: boolean;
   is_running?: boolean;
-  response: SearchResponse<Source>;
+  response?: SearchResponse<Source>;
 }
 
 export type IEsSearchResponse<Source = any> = IKibanaSearchResponse<SearchResponse<Source>>;

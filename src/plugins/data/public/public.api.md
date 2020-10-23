@@ -903,7 +903,7 @@ export interface IEsSearchRequest extends IKibanaSearchRequest<ISearchRequestPar
 // Warning: (ae-missing-release-tag) "IEsSearchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type IEsSearchResponse<Source = any> = IKibanaSearchResponse<Source>;
+export type IEsSearchResponse<Source = any> = IKibanaSearchResponse<SearchResponse<Source>>;
 
 // Warning: (ae-missing-release-tag) "IFieldFormat" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
