@@ -4,6 +4,8 @@
 
 ## ISearchOptions.waitForCompletion property
 
+If this option is true, the stream will be completed only upon receiving is\_partial = false and is\_running = false
+
 <b>Signature:</b>
 
 ```typescript

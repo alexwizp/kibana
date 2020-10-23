@@ -4,11 +4,6 @@
  * you may not use this file except in compliance with the Elastic License.
  */
 
-import { ISearchOptions } from '../../../../../src/plugins/data/public';
+import { IPartialSearchOptions } from '../../../../../src/plugins/data/public';
 
-export interface IAsyncSearchOptions extends ISearchOptions {
-  /**
-   * The number of milliseconds to wait between receiving a response and sending another request
-   */
-  pollInterval?: number;
-}
+export type IAsyncSearchOptions = IPartialSearchOptions;

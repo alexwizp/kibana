@@ -37,7 +37,17 @@ export interface ISearchOptions {
    */
   sessionId?: string;
 
+  /**
+   *  If this option is true, the stream will be completed only upon receiving is_partial = false and is_running = false
+   */
   waitForCompletion?: boolean;
+}
+
+export interface IPartialSearchOptions extends ISearchOptions {
+  /**
+   * The number of milliseconds to wait between receiving a response and sending another request
+   */
+  pollInterval?: number;
 }
 
 export type ISearchRequestParams<T = Record<string, any>> = {

@@ -30,7 +30,7 @@ import { toSnakeCase } from './to_snake_case';
 import { getTotalLoaded } from './get_total_loaded';
 import { isCompleteResponse } from './utils';
 
-import type { IEsRawSearchResponse, ISearchOptions } from './types';
+import type { IEsRawSearchResponse, IPartialSearchOptions } from './types';
 import type { IKibanaSearchRequest, IKibanaSearchResponse } from '../types';
 
 type SearchMethod = <SearchResponse extends IEsRawSearchResponse = IEsRawSearchResponse>(
@@ -66,7 +66,7 @@ export const doPartialSearch = <SearchResponse extends IEsRawSearchResponse = IE
   partialSearchMethod: SearchMethod,
   requestId: IKibanaSearchRequest['id'],
   asyncOptions: Record<string, any>,
-  { abortSignal, waitForCompletion }: ISearchOptions
+  { abortSignal, waitForCompletion, pollInterval }: IPartialSearchOptions
 ) => ({ params, options }: DoSearchFnArgs) => {
   const isCompleted = (response: SearchResponse) =>
     !Boolean(response.is_partial || response.is_running);
@@ -83,7 +83,7 @@ export const doPartialSearch = <SearchResponse extends IEsRawSearchResponse = IE
     ).pipe(
       expand((r) => {
         if (waitForCompletion && !isCompleted(r.body) && r.body.id) {
-          return timer(1000).pipe(switchMap(() => partialSearch(r.body.id!)));
+          return timer(pollInterval ?? 1000).pipe(switchMap(() => partialSearch(r.body.id!)));
         }
         return of(r);
       })

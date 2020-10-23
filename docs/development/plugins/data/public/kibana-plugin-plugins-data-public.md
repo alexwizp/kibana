@@ -70,6 +70,7 @@
 |  [IndexPatternAttributes](./kibana-plugin-plugins-data-public.indexpatternattributes.md) |  |
 |  [IndexPatternSpec](./kibana-plugin-plugins-data-public.indexpatternspec.md) |  |
 |  [IndexPatternTypeMeta](./kibana-plugin-plugins-data-public.indexpatterntypemeta.md) |  |
+|  [IPartialSearchOptions](./kibana-plugin-plugins-data-public.ipartialsearchoptions.md) |  |
 |  [ISearchOptions](./kibana-plugin-plugins-data-public.isearchoptions.md) |  |
 |  [ISearchSetup](./kibana-plugin-plugins-data-public.isearchsetup.md) | The setup contract exposed by the Search plugin exposes the search strategy extension point. |
 |  [ISearchStart](./kibana-plugin-plugins-data-public.isearchstart.md) | search service |
