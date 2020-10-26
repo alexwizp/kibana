@@ -43,13 +43,6 @@ export interface ISearchOptions {
   waitForCompletion?: boolean;
 }
 
-export interface IPartialSearchOptions extends ISearchOptions {
-  /**
-   * The number of milliseconds to wait between receiving a response and sending another request
-   */
-  pollInterval?: number;
-}
-
 export type ISearchRequestParams<T = Record<string, any>> = {
   trackTotalHits?: boolean;
 } & Search<T>;

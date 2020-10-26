@@ -8,6 +8,10 @@ import { Logger, SharedGlobalConfig } from 'kibana/server';
 import { switchMap, mergeMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { search, DoSearchFnArgs } from '../../../../../src/plugins/data/server';
+import {
+  doPartialSearch,
+  takeUntilPollingComplete,
+} from '../../common/search/es_search/es_search_rxjs_utils';
 import { getDefaultSearchParams, getAsyncOptions } from './get_default_search_params';
 
 import type { ISearchStrategy } from '../../../../../src/plugins/data/server';
@@ -54,7 +58,7 @@ export const eqlSearchStrategyProvider = (
             })
         ),
         switchMap(
-          esSearch.doPartialSearch(
+          doPartialSearch(
             (...args) => context.core.elasticsearch.client.asCurrentUser.eql.search(...args),
             (...args) => context.core.elasticsearch.client.asCurrentUser.eql.get(...args),
             request.id,
@@ -63,7 +67,7 @@ export const eqlSearchStrategyProvider = (
           )
         ),
         esSearch.toKibanaSearchResponse(),
-        esSearch.takeUntilPollingComplete(options.waitForCompletion)
+        takeUntilPollingComplete(options.waitForCompletion)
       );
     },
   };

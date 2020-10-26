@@ -382,13 +382,7 @@ export {
 
 export type { SearchSource } from './search';
 
-export {
-  ISearchOptions,
-  IPartialSearchOptions,
-  isErrorResponse,
-  isCompleteResponse,
-  isPartialResponse,
-} from '../common';
+export { ISearchOptions, isErrorResponse, isCompleteResponse, isPartialResponse } from '../common';
 
 // Search namespace
 export const search = {

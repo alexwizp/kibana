@@ -180,10 +180,8 @@ import {
   toSnakeCase,
   shimAbortSignal,
   doSearch,
-  doPartialSearch,
   includeTotalLoaded,
   toKibanaSearchResponse,
-  takeUntilPollingComplete,
   getTotalLoaded,
 } from '../common';
 
@@ -239,11 +237,9 @@ export const search = {
     doSearch,
     toSnakeCase,
     shimAbortSignal,
-    doPartialSearch,
     trackSearchStatus,
     includeTotalLoaded,
     toKibanaSearchResponse,
-    takeUntilPollingComplete,
     // utils:
     getTotalLoaded,
   },

@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { from, Observable, of, timer } from 'rxjs';
-import { expand, map, mergeMap, switchMap, takeWhile } from 'rxjs/operators';
+import { from } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import type { ShardsResponse } from 'elasticsearch';
 import type { TransportRequestPromise } from '@elastic/elasticsearch/lib/Transport';
@@ -28,12 +28,11 @@ import { ApiResponse } from '@elastic/elasticsearch';
 import { shimAbortSignal } from './shim_abort_signal';
 import { toSnakeCase } from './to_snake_case';
 import { getTotalLoaded } from './get_total_loaded';
-import { isCompleteResponse } from './utils';
 
-import type { IEsRawSearchResponse, IPartialSearchOptions } from './types';
-import type { IKibanaSearchRequest, IKibanaSearchResponse } from '../types';
+import type { IEsRawSearchResponse } from './types';
+import type { IKibanaSearchResponse } from '../types';
 
-type SearchMethod = <SearchResponse extends IEsRawSearchResponse = IEsRawSearchResponse>(
+export type SearchMethod = <SearchResponse extends IEsRawSearchResponse = IEsRawSearchResponse>(
   params: any,
   options?: any
 ) => TransportRequestPromise<ApiResponse<SearchResponse>>;
@@ -61,46 +60,6 @@ export const doSearch = <SearchResponse extends IEsRawSearchResponse = IEsRawSea
     })
   );
 
-export const doPartialSearch = <SearchResponse extends IEsRawSearchResponse = IEsRawSearchResponse>(
-  searchMethod: SearchMethod,
-  partialSearchMethod: SearchMethod,
-  requestId: IKibanaSearchRequest['id'],
-  asyncOptions: Record<string, any>,
-  { abortSignal, waitForCompletion, pollInterval }: IPartialSearchOptions
-) => ({ params, options }: DoSearchFnArgs) => {
-  const isCompleted = (response: SearchResponse) =>
-    !Boolean(response.is_partial || response.is_running);
-
-  const partialSearch = (id: string): Observable<ApiResponse<SearchResponse>> =>
-    from(
-      partialSearchMethod<SearchResponse>(
-        {
-          id,
-          ...toSnakeCase(asyncOptions),
-        },
-        options
-      )
-    ).pipe(
-      expand((r) => {
-        if (waitForCompletion && !isCompleted(r.body) && r.body.id) {
-          return timer(pollInterval ?? 1000).pipe(switchMap(() => partialSearch(r.body.id!)));
-        }
-        return of(r);
-      })
-    );
-
-  return requestId
-    ? partialSearch(requestId)
-    : of({ params, options }).pipe(
-        switchMap(doSearch<SearchResponse>(searchMethod, abortSignal)),
-        mergeMap((response) =>
-          waitForCompletion && !isCompleted(response.body) && response.body.id
-            ? partialSearch(response.body.id)
-            : of(response)
-        )
-      );
-};
-
 export const toKibanaSearchResponse = <
   SearchResponse extends IEsRawSearchResponse = IEsRawSearchResponse,
   KibanaResponse extends IKibanaSearchResponse = IKibanaSearchResponse<SearchResponse>
@@ -122,10 +81,4 @@ export const includeTotalLoaded = () =>
         ...response,
         ...(response.rawResponse._shards && getTotalLoaded(response.rawResponse._shards)),
       } as Assign<IKibanaSearchResponse, ShardsResponse>)
-  );
-
-export const takeUntilPollingComplete = (waitForCompletion: boolean = false) =>
-  takeWhile(
-    (response: IKibanaSearchResponse) => waitForCompletion && !isCompleteResponse(response),
-    true
   );

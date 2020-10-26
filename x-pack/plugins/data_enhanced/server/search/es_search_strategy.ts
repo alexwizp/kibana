@@ -15,7 +15,10 @@ import {
   search,
   DoSearchFnArgs,
 } from '../../../../../src/plugins/data/server';
-
+import {
+  doPartialSearch,
+  takeUntilPollingComplete,
+} from '../../common/search/es_search/es_search_rxjs_utils';
 import { getDefaultSearchParams, getAsyncOptions } from './get_default_search_params';
 
 import type { ISearchStrategy, SearchUsage } from '../../../../../src/plugins/data/server';
@@ -62,7 +65,7 @@ export const enhancedEsSearchStrategyProvider = (
           })
       ),
       switchMap(
-        esSearch.doPartialSearch(
+        doPartialSearch(
           (...args) => context.core.elasticsearch.client.asCurrentUser.asyncSearch.submit(...args),
           (...args) => context.core.elasticsearch.client.asCurrentUser.asyncSearch.get(...args),
           request.id,
@@ -77,7 +80,7 @@ export const enhancedEsSearchStrategyProvider = (
       })),
       esSearch.trackSearchStatus(logger, usage),
       esSearch.includeTotalLoaded(),
-      esSearch.takeUntilPollingComplete(options.waitForCompletion)
+      takeUntilPollingComplete(options.waitForCompletion)
     );
   }
 
