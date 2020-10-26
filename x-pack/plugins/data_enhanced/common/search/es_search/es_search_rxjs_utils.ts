@@ -5,7 +5,7 @@
  */
 
 import { from, of, timer, Observable } from 'rxjs';
-import { expand, mergeMap, switchMap, takeWhile } from 'rxjs/operators';
+import { first, expand, mergeMap, takeWhile, switchMap } from 'rxjs/operators';
 import { ApiResponse } from '@elastic/elasticsearch';
 
 import {
@@ -21,7 +21,7 @@ import {
 import { IAsyncSearchOptions } from '../../../common/search/types';
 
 export const takePartialSearch = <TResponse = any>(
-  searchMethod: () => Promise<TResponse>,
+  searchMethod: () => Promise<TResponse> | Observable<TResponse>,
   hasRequestCompleted: (r: TResponse) => boolean,
   pollInterval: IAsyncSearchOptions['pollInterval']
 ): Observable<TResponse> =>
@@ -29,7 +29,8 @@ export const takePartialSearch = <TResponse = any>(
     expand((r) => {
       if (!hasRequestCompleted(r)) {
         return timer(pollInterval ?? 1000).pipe(
-          switchMap(() => takePartialSearch(searchMethod, hasRequestCompleted, pollInterval))
+          switchMap(() => takePartialSearch(searchMethod, hasRequestCompleted, pollInterval)),
+          first()
         );
       }
       return of(r);
