@@ -22,23 +22,7 @@ type IFieldFormatsRegistry = PublicMethodsOf<FieldFormatsRegistry>;
 
 export { FieldFormatsRegistry, IFieldFormatsRegistry };
 export { FieldFormat } from './field_format';
-export { baseFormatters } from './constants/base_formatters';
-export {
-  BoolFormat,
-  BytesFormat,
-  ColorFormat,
-  DurationFormat,
-  IpFormat,
-  NumberFormat,
-  PercentFormat,
-  RelativeDateFormat,
-  SourceFormat,
-  StaticLookupFormat,
-  UrlFormat,
-  StringFormat,
-  TruncateFormat,
-} from './converters';
-
+export { getBaseFormatters } from './constants/base_formatters';
 export { getHighlightRequest } from './utils';
 
 export { DEFAULT_CONVERTER_COLOR } from './constants/color_default';

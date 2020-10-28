@@ -58,7 +58,7 @@ describe('EnhancedSearchInterceptor', () => {
     next.mockClear();
     error.mockClear();
     complete.mockClear();
-    jest.clearAllTimers();
+
 
     mockUsageCollector = {
       trackQueryTimedOut: jest.fn(),

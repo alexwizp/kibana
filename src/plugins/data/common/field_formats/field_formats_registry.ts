@@ -29,7 +29,7 @@ import {
   IFieldFormatMetaParams,
   IFieldFormat,
 } from './types';
-import { baseFormatters } from './constants/base_formatters';
+import { getBaseFormatters } from './constants/base_formatters';
 import { FieldFormat } from './field_format';
 import { SerializedFieldFormat } from '../../../expressions/common/types';
 import { ES_FIELD_TYPES, KBN_FIELD_TYPES } from '../kbn_field_types/types';
@@ -46,13 +46,14 @@ export class FieldFormatsRegistry {
     return new (FieldFormat.from(identity))();
   };
 
-  init(
+  async init(
     getConfig: FieldFormatsGetConfigFn,
     metaParamsOptions: Record<string, any> = {},
-    defaultFieldConverters: FieldFormatInstanceType[] = baseFormatters
+    defaultFieldConverters: FieldFormatInstanceType[]
   ) {
+    debugger;
     const defaultTypeMap = getConfig(UI_SETTINGS.FORMAT_DEFAULT_TYPE_MAP);
-    this.register(defaultFieldConverters);
+    this.register(defaultFieldConverters ?? (await getBaseFormatters()));
     this.parseDefaultTypeMap(defaultTypeMap);
     this.getConfig = getConfig;
     this.metaParamsOptions = metaParamsOptions;

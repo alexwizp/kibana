@@ -19,34 +19,36 @@
 
 import { FieldFormatInstanceType } from '../types';
 
-import {
-  BoolFormat,
-  BytesFormat,
-  ColorFormat,
-  DurationFormat,
-  IpFormat,
-  NumberFormat,
-  PercentFormat,
-  RelativeDateFormat,
-  SourceFormat,
-  StaticLookupFormat,
-  StringFormat,
-  TruncateFormat,
-  UrlFormat,
-} from '../converters';
+export const getBaseFormatters = async (): Promise<FieldFormatInstanceType[]> => {
+  const {
+    BoolFormat,
+    BytesFormat,
+    ColorFormat,
+    DurationFormat,
+    IpFormat,
+    NumberFormat,
+    PercentFormat,
+    RelativeDateFormat,
+    SourceFormat,
+    StaticLookupFormat,
+    StringFormat,
+    TruncateFormat,
+    UrlFormat,
+  } = await import('../converters');
 
-export const baseFormatters: FieldFormatInstanceType[] = [
-  BoolFormat,
-  BytesFormat,
-  ColorFormat,
-  DurationFormat,
-  IpFormat,
-  NumberFormat,
-  PercentFormat,
-  RelativeDateFormat,
-  SourceFormat,
-  StaticLookupFormat,
-  StringFormat,
-  TruncateFormat,
-  UrlFormat,
-];
+  return [
+    BoolFormat,
+    BytesFormat,
+    ColorFormat,
+    DurationFormat,
+    IpFormat,
+    NumberFormat,
+    PercentFormat,
+    RelativeDateFormat,
+    SourceFormat,
+    StaticLookupFormat,
+    StringFormat,
+    TruncateFormat,
+    UrlFormat,
+  ];
+};

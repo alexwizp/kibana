@@ -17,7 +17,10 @@
  * under the License.
  */
 
-import { baseFormatters } from '../../common';
-import { DateFormat, DateNanosFormat } from './converters';
+import { FieldFormatInstanceType, getBaseFormatters } from '../../common';
 
-export const baseFormattersPublic = [DateFormat, DateNanosFormat, ...baseFormatters];
+export const getBaseFormattersPublic = async (): Promise<FieldFormatInstanceType[]> => {
+  const { DateFormat, DateNanosFormat } = await import('./converters');
+
+  return [DateFormat, DateNanosFormat, ...(await getBaseFormatters())];
+};

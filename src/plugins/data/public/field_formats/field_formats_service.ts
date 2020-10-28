@@ -21,12 +21,12 @@ import { CoreSetup } from 'src/core/public';
 import { FieldFormatsRegistry, UI_SETTINGS } from '../../common';
 import { deserializeFieldFormat } from './utils/deserialize';
 import { FormatFactory } from '../../common/field_formats/utils';
-import { baseFormattersPublic } from './constants';
+import { getBaseFormattersPublic } from './constants';
 
 export class FieldFormatsService {
   private readonly fieldFormatsRegistry: FieldFormatsRegistry = new FieldFormatsRegistry();
 
-  public setup(core: CoreSetup) {
+  public async setup(core: CoreSetup) {
     core.uiSettings.getUpdate$().subscribe(({ key, newValue }) => {
       if (key === UI_SETTINGS.FORMAT_DEFAULT_TYPE_MAP) {
         this.fieldFormatsRegistry.parseDefaultTypeMap(newValue);
@@ -35,7 +35,7 @@ export class FieldFormatsService {
 
     const getConfig = core.uiSettings.get.bind(core.uiSettings);
 
-    this.fieldFormatsRegistry.init(
+    await this.fieldFormatsRegistry.init(
       getConfig,
       {
         parsedUrl: {
@@ -44,7 +44,7 @@ export class FieldFormatsService {
           basePath: core.http.basePath.get(),
         },
       },
-      baseFormattersPublic
+      await getBaseFormattersPublic()
     );
 
     return this.fieldFormatsRegistry as FieldFormatsSetup;

@@ -20,19 +20,17 @@ import { has } from 'lodash';
 import {
   FieldFormatsRegistry,
   FieldFormatInstanceType,
-  baseFormatters,
+  getBaseFormatters,
 } from '../../common/field_formats';
 import { IUiSettingsClient } from '../../../../core/server';
 import { DateFormat, DateNanosFormat } from './converters';
 
 export class FieldFormatsService {
-  private readonly fieldFormatClasses: FieldFormatInstanceType[] = [
-    DateFormat,
-    DateNanosFormat,
-    ...baseFormatters,
-  ];
+  private fieldFormatClasses: FieldFormatInstanceType[] = [];
 
-  public setup() {
+  public async setup() {
+    this.fieldFormatClasses = [DateFormat, DateNanosFormat, ...(await getBaseFormatters())];
+
     return {
       register: (customFieldFormat: FieldFormatInstanceType) =>
         this.fieldFormatClasses.push(customFieldFormat),
@@ -52,7 +50,11 @@ export class FieldFormatsService {
           }
         });
 
-        fieldFormatsRegistry.init((key: string) => uiConfigs[key], {}, this.fieldFormatClasses);
+        await fieldFormatsRegistry.init(
+          (key: string) => uiConfigs[key],
+          {},
+          this.fieldFormatClasses
+        );
 
         return fieldFormatsRegistry;
       },
