@@ -1,0 +1,18 @@
+{
+  "id": "visTypeTimeseriesEnhanced",
+  "version": "8.0.0",
+  "kibanaVersion": "kibana",
+  "server": true,
+  "ui": false,
+  "requiredPlugins": [
+    "visTypeTimeseries",
+    "rollup"
+  ],
+  "requiredBundles": [
+    "kibanaUtils",
+    "kibanaReact",
+    "home",
+    "esUiShared",
+    "data"
+  ]
+}
