@@ -90,7 +90,7 @@ export interface SearchSourceFields {
   /**
    * {@link IndexPatternService}
    */
-  index?: IndexPattern;
+  index?: IndexPattern | string;
   searchAfter?: EsQuerySearchAfter;
   timeout?: string;
   terminate_after?: number;
