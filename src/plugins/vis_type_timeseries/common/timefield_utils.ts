@@ -17,25 +17,16 @@
  * under the License.
  */
 
-import { AbstractSearchStrategy, ReqFacade } from './abstract_search_strategy';
-import { DefaultSearchCapabilities } from '../default_search_capabilities';
-import { VisPayload } from '../../../../common/types';
+import { TimeFieldObject } from './types';
 
-export class DefaultSearchStrategy extends AbstractSearchStrategy {
-  name = 'default';
+const isTimefieldHasCustomLabel = (
+  timeField: any
+): timeField is { name: string; label: string } => {
+  return timeField && timeField.name && timeField.label;
+};
 
-  checkForViability(req: ReqFacade<VisPayload>) {
-    return Promise.resolve({
-      isViable: true,
-      capabilities: new DefaultSearchCapabilities(req),
-    });
-  }
+export const extractTimefieldName = (timeField: TimeFieldObject) =>
+  isTimefieldHasCustomLabel(timeField) ? timeField.name : timeField;
 
-  async getFieldsForWildcard<TPayload = unknown>(
-    req: ReqFacade<TPayload>,
-    indexPattern: string,
-    capabilities?: unknown
-  ) {
-    return super.getFieldsForWildcard(req, indexPattern, capabilities);
-  }
-}
+export const extractTimefieldLabel = (timeField: TimeFieldObject) =>
+  isTimefieldHasCustomLabel(timeField) ? timeField.label : timeField;

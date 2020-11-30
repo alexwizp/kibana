@@ -42,16 +42,21 @@ function FieldSelectUi({
   if (type === 'count') {
     return null;
   }
-
   const selectedOptions = [];
+  let placeholderLabel;
+
   const options = Object.values(
     (fields[indexPattern] || []).reduce((acc, field) => {
+      if (placeholder === field.name) {
+        placeholderLabel = field.label;
+      }
+
       if (
         isFieldTypeEnabled(restrict, field.type) &&
         isFieldEnabled(field.name, type, uiRestrictions)
       ) {
         const item = {
-          label: field.name,
+          label: field.label,
           value: field.name,
         };
 
@@ -64,7 +69,7 @@ function FieldSelectUi({
           };
         }
 
-        if (value === item.value) {
+        if ((value?.name || value) === item.value) {
           selectedOptions.push(item);
         }
       }
@@ -79,7 +84,7 @@ function FieldSelectUi({
 
   return (
     <EuiComboBox
-      placeholder={placeholder}
+      placeholder={placeholderLabel ?? ''}
       isDisabled={disabled}
       options={options}
       selectedOptions={selectedOptions}
@@ -107,7 +112,7 @@ FieldSelectUi.propTypes = {
   onChange: PropTypes.func,
   restrict: PropTypes.array,
   type: PropTypes.string,
-  value: PropTypes.string,
+  //value: PropTypes.oneOf([PropTypes.string, PropTypes.object]),
   uiRestrictions: PropTypes.object,
   placeholder: PropTypes.string,
 };

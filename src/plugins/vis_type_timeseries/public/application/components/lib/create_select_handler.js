@@ -17,12 +17,26 @@
  * under the License.
  */
 
-import _ from 'lodash';
+export const createSelectHandler = (handleChange) => (name) => (selected = []) =>
+  handleChange?.({
+    [name]: selected[0]?.value ?? null,
+  });
 
-export const createSelectHandler = (handleChange) => {
-  return (name) => (selectedOptions) => {
-    return handleChange?.({
-      [name]: _.get(selectedOptions, '[0].value', null),
-    });
-  };
+export const createCustomLabelSelectHandled = (handleChange) => (name) => (selected = []) => {
+  const firstItem = selected[0];
+  let value = null;
+
+  if (firstItem) {
+    value =
+      firstItem.value === firstItem.label
+        ? firstItem.value
+        : {
+            name: firstItem.value,
+            label: firstItem.label,
+          };
+  }
+
+  handleChange?.({
+    [name]: value,
+  });
 };
