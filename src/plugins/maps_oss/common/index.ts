@@ -18,3 +18,4 @@
  */
 
 export * from './constants';
+export { EMSSettings, IEMSConfig } from './ems_settings';

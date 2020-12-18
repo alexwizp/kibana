@@ -9,7 +9,7 @@ import { CoreStart } from 'kibana/public';
 import { MapsLegacyConfig } from '../../../../src/plugins/maps_legacy/config';
 import { MapsConfigType } from '../config';
 import { MapsPluginStartDependencies } from './plugin';
-import { EMSSettings } from '../common/ems_settings';
+import { EMSSettings } from '../../../../src/plugins/maps_oss/public';
 
 let kibanaVersion: string;
 export const setKibanaVersion = (version: string) => (kibanaVersion = version);

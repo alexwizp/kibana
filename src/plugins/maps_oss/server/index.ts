@@ -26,6 +26,8 @@ export const config: PluginConfigDescriptor<ConfigSchema> = {
   deprecations: () => [copyFromRoot('xpack.maps.enabled', 'maps_oss.enabled')],
 };
 
+export { EMSSettings, IEMSConfig } from '../common';
+
 export const plugin = () => ({
   setup() {},
   start() {},

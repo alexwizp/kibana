@@ -53,6 +53,7 @@ import { createLayerDescriptors, registerLayerWizard, registerSource } from './a
 import { SharePluginSetup, SharePluginStart } from '../../../../src/plugins/share/public';
 import { EmbeddableStart } from '../../../../src/plugins/embeddable/public';
 import { MapsLegacyConfig } from '../../../../src/plugins/maps_legacy/config';
+import { EMSSettings } from '../../../../src/plugins/maps_oss/public';
 import { DataPublicPluginStart } from '../../../../src/plugins/data/public';
 import { LicensingPluginSetup, LicensingPluginStart } from '../../licensing/public';
 import { StartContract as FileUploadStartContract } from '../../file_upload/public';
@@ -62,7 +63,6 @@ import {
   registerLicensedFeatures,
   setLicensingPluginStart,
 } from './licensed_features';
-import { EMSSettings } from '../common/ems_settings';
 import { SavedObjectTaggingPluginStart } from '../../saved_objects_tagging/public';
 
 export interface MapsPluginSetupDependencies {

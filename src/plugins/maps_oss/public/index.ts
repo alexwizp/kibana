@@ -18,4 +18,6 @@
  */
 import { MapsOSSPlugin } from './plugin';
 
+export { EMSSettings, IEMSConfig } from '../common';
+
 export const plugin = () => new MapsOSSPlugin();

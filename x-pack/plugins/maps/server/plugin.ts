@@ -28,7 +28,7 @@ import { ILicense } from '../../licensing/common/types';
 import { LicensingPluginSetup } from '../../licensing/server';
 import { HomeServerPluginSetup } from '../../../../src/plugins/home/server';
 import { MapsLegacyPluginSetup } from '../../../../src/plugins/maps_legacy/server';
-import { EMSSettings } from '../common/ems_settings';
+import { EMSSettings } from '../../../../src/plugins/maps_oss/server';
 
 interface SetupDeps {
   features: FeaturesPluginSetupContract;
