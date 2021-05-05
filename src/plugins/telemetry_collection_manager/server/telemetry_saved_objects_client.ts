@@ -7,7 +7,12 @@
  */
 
 import type { SavedObjectsFindOptions, SavedObjectsFindResponse } from 'src/core/server';
-import { SavedObjectsClient } from '../../../core/server';
+import {
+  ISavedObjectsPointInTimeFinder,
+  SavedObjectsClient,
+  SavedObjectsCreatePointInTimeFinderDependencies,
+  SavedObjectsCreatePointInTimeFinderOptions,
+} from '../../../core/server';
 
 /**
  * Extends the SavedObjectsClient to fit the telemetry fetching requirements (i.e.: find objects from all namespaces by default)
@@ -21,5 +26,17 @@ export class TelemetrySavedObjectsClient extends SavedObjectsClient {
     options: SavedObjectsFindOptions
   ): Promise<SavedObjectsFindResponse<T, A>> {
     return super.find({ namespaces: ['*'], ...options });
+  }
+
+  /**
+   * Extends {@link SavedObjectsClient.createPointInTimeFinder} by performing the request to all the Spaces by default
+   * @param findOptions
+   * @param dependencies
+   */
+  createPointInTimeFinder(
+    findOptions: SavedObjectsCreatePointInTimeFinderOptions,
+    dependencies?: SavedObjectsCreatePointInTimeFinderDependencies
+  ): ISavedObjectsPointInTimeFinder {
+    return super.createPointInTimeFinder({ namespaces: ['*'], ...findOptions }, dependencies);
   }
 }
