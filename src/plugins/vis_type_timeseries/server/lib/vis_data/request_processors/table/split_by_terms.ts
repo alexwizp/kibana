@@ -9,7 +9,15 @@
 import { overwrite } from '../../helpers';
 import { esQuery } from '../../../../../../data/server';
 
-export function splitByTerms(req, panel, esQueryConfig, seriesIndex) {
+import type { TableRequestProcessorsFunction } from './types';
+
+export const splitByTerms: TableRequestProcessorsFunction = ({
+  panel,
+  esQueryConfig,
+  seriesIndex,
+}) => {
+  const indexPattern = seriesIndex.indexPattern || undefined;
+
   return (next) => (doc) => {
     panel.series
       .filter((c) => c.aggregate_by && c.aggregate_function)
@@ -21,10 +29,10 @@ export function splitByTerms(req, panel, esQueryConfig, seriesIndex) {
           overwrite(
             doc,
             `aggs.pivot.aggs.${column.id}.column_filter.filter`,
-            esQuery.buildEsQuery(seriesIndex.indexPattern, [column.filter], [], esQueryConfig)
+            esQuery.buildEsQuery(indexPattern, [column.filter], [], esQueryConfig)
           );
         }
       });
     return next(doc);
   };
-}
+};

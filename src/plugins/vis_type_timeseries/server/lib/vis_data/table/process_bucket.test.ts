@@ -8,11 +8,14 @@
 
 import { processBucket } from './process_bucket';
 
-function createValueObject(key, value, seriesId) {
+import type { Panel, Series } from '../../../../common/types';
+import { createFieldsFetcher } from '../../search_strategies/lib/fields_fetcher';
+
+function createValueObject(key: string | number, value: string | number, seriesId: string) {
   return { key_as_string: `${key}`, doc_count: value, key, [seriesId]: { value } };
 }
 
-function createBucketsObjects(size, sort, seriesId) {
+function createBucketsObjects(size: number, sort: string, seriesId: string) {
   const values = Array(size)
     .fill(1)
     .map((_, i) => i + 1);
@@ -25,19 +28,19 @@ function createBucketsObjects(size, sort, seriesId) {
   return values.map((v, i) => createValueObject(i, v, seriesId));
 }
 
-function createPanel(series) {
+function createPanel(series: string[]) {
   return {
     type: 'table',
     time_field: '',
-    series: series.map((seriesId) => ({
+    series: (series.map((seriesId) => ({
       id: seriesId,
       metrics: [{ id: seriesId, type: 'count' }],
       trend_arrows: 1,
-    })),
-  };
+    })) as unknown) as Series[],
+  } as Panel;
 }
 
-function createBuckets(series) {
+function createBuckets(series: string[]) {
   return [
     { key: 'A', trend: 'asc', size: 10 },
     { key: 'B', trend: 'desc', size: 10 },
@@ -52,7 +55,7 @@ function createBuckets(series) {
       baseObj[seriesId] = {
         meta: {
           timeField: 'timestamp',
-          seriesId: seriesId,
+          seriesId,
         },
         buckets: createBucketsObjects(size, trend, seriesId),
       };
@@ -61,7 +64,7 @@ function createBuckets(series) {
   });
 }
 
-function trendChecker(trend, slope) {
+function trendChecker(trend: string, slope: number) {
   switch (trend) {
     case 'asc':
       return slope > 0;
@@ -75,8 +78,10 @@ function trendChecker(trend, slope) {
 }
 
 describe('processBucket(panel)', () => {
+  const extractFields = jest.fn() as ReturnType<typeof createFieldsFetcher>;
+  let panel: Panel;
+
   describe('single metric panel', () => {
-    let panel;
     const SERIES_ID = 'series-id';
 
     beforeEach(() => {
@@ -84,7 +89,7 @@ describe('processBucket(panel)', () => {
     });
 
     test('return the correct trend direction', async () => {
-      const bucketProcessor = processBucket(panel);
+      const bucketProcessor = processBucket({ panel, extractFields });
       const buckets = createBuckets([SERIES_ID]);
       for (const bucket of buckets) {
         const result = await bucketProcessor(bucket);
@@ -94,7 +99,7 @@ describe('processBucket(panel)', () => {
     });
 
     test('properly handle 0 values for trend', async () => {
-      const bucketProcessor = processBucket(panel);
+      const bucketProcessor = processBucket({ panel, extractFields });
       const bucketforNaNResult = {
         key: 'NaNScenario',
         expectedTrend: 'flat',
@@ -116,7 +121,7 @@ describe('processBucket(panel)', () => {
     });
 
     test('have the side effect to create the timeseries property if missing on bucket', async () => {
-      const bucketProcessor = processBucket(panel);
+      const bucketProcessor = processBucket({ panel, extractFields });
       const buckets = createBuckets([SERIES_ID]);
 
       for (const bucket of buckets) {
@@ -129,7 +134,6 @@ describe('processBucket(panel)', () => {
   });
 
   describe('multiple metrics panel', () => {
-    let panel;
     const SERIES = ['series-id-1', 'series-id-2'];
 
     beforeEach(() => {
@@ -137,7 +141,7 @@ describe('processBucket(panel)', () => {
     });
 
     test('return the correct trend direction', async () => {
-      const bucketProcessor = processBucket(panel);
+      const bucketProcessor = processBucket({ panel, extractFields });
       const buckets = createBuckets(SERIES);
       for (const bucket of buckets) {
         const result = await bucketProcessor(bucket);

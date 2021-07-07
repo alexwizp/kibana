@@ -5,16 +5,19 @@
  * in compliance with, at your election, the Elastic License 2.0 or the Server
  * Side Public License, v 1.
  */
-
-import { overwrite } from '../../helpers';
-import { bucketTransform } from '../../helpers/bucket_transform';
-import { calculateAggRoot } from './calculate_agg_root';
 import { get } from 'lodash';
+import { overwrite } from '../../helpers';
+import { calculateAggRoot } from './calculate_agg_root';
+import type { TableRequestProcessorsFunction } from './types';
 
-export function siblingBuckets(req, panel) {
+// @ts-expect-error not typed yet
+import { bucketTransform } from '../../helpers/bucket_transform';
+
+export const siblingBuckets: TableRequestProcessorsFunction = ({ panel }) => {
   return (next) => async (doc) => {
     panel.series.forEach((column) => {
       const aggRoot = calculateAggRoot(doc, column);
+
       column.metrics
         .filter((row) => /_bucket$/.test(row.type))
         .forEach((metric) => {
@@ -31,6 +34,7 @@ export function siblingBuckets(req, panel) {
           }
         });
     });
+
     return next(doc);
   };
-}
+};

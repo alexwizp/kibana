@@ -7,17 +7,22 @@
  */
 
 import { normalizeQuery } from './normalize_query';
+import { overwrite } from '../../helpers';
+
+import {
+  TableRequestProcessorsFunction,
+  TableRequestProcessorsParams,
+  TableSearchRequest,
+} from './types';
 
 describe('normalizeQuery', () => {
-  const req = 'req';
   const seriesId = '61ca57f1-469d-11e7-af02-69e470af7417';
   const panelId = '39d49073-a924-426b-aa32-35acb40a9bb7';
+  const tableRequestProcessorsParams = {} as TableRequestProcessorsParams;
 
-  let next;
-  let panel;
-  let series;
+  let next: TableRequestProcessorsFunction;
 
-  const getMockedDoc = () => ({
+  const getMockedDoc = (): TableSearchRequest => ({
     size: 0,
     query: {},
     aggs: {
@@ -66,21 +71,17 @@ describe('normalizeQuery', () => {
   });
 
   beforeEach(() => {
-    next = jest.fn((x) => x);
-    panel = {};
-    series = {
-      id: seriesId,
-    };
+    next = (jest.fn((x) => x) as unknown) as TableRequestProcessorsFunction;
   });
 
-  test('should remove the top level aggregation if filter.match_all is empty', () => {
+  test('should remove the top level aggregation if filter.match_all is empty', async () => {
     const doc = getMockedDoc();
 
-    doc.aggs.pivot.aggs[seriesId].filter = {
+    overwrite(doc, `aggs.pivot.aggs[${seriesId}].filter`, {
       match_all: {},
-    };
+    });
 
-    const modifiedDoc = normalizeQuery(req, panel, series)(next)(doc);
+    const modifiedDoc = await normalizeQuery(tableRequestProcessorsParams)(next)(doc);
     expect(modifiedDoc.aggs.pivot.aggs[seriesId].aggs.timeseries).toBeUndefined();
     expect(modifiedDoc.aggs.pivot.aggs[seriesId].aggs[seriesId]).toBeDefined();
 
@@ -93,33 +94,34 @@ describe('normalizeQuery', () => {
     });
   });
 
-  test('should not remove the top level aggregation if filter.match_all is not empty', () => {
+  test('should not remove the top level aggregation if filter.match_all is not empty', async () => {
     const doc = getMockedDoc();
 
-    doc.aggs.pivot.aggs[seriesId].filter = {
+    overwrite(doc, `aggs.pivot.aggs[${seriesId}].filter`, {
       match_all: { filter: 1 },
-    };
+    });
 
-    const modifiedDoc = normalizeQuery(req, panel, series)(next)(doc);
+    const modifiedDoc = await normalizeQuery(tableRequestProcessorsParams)(next)(doc);
 
     expect(modifiedDoc.aggs.pivot.aggs[seriesId].aggs.timeseries).toBeDefined();
     expect(modifiedDoc.aggs.pivot.aggs[seriesId].aggs[seriesId]).toBeUndefined();
   });
 
-  test('should not remove the top level aggregation for Sibling Pipeline queries', () => {
+  test('should not remove the top level aggregation for Sibling Pipeline queries', async () => {
     const doc = getMockedDoc();
     const pipelineId = 'd4167fe0-afb0-11e9-b141-7b94c69f37eb';
 
-    doc.aggs.pivot.aggs[seriesId].filter = {
+    overwrite(doc, `aggs.pivot.aggs[${seriesId}].filter`, {
       match_all: {},
-    };
-    doc.aggs.pivot.aggs[seriesId].aggs[pipelineId] = {
+    });
+
+    overwrite(doc, `aggs.pivot.aggs[${seriesId}].aggs[${pipelineId}]`, {
       extended_stats_bucket: {
         buckets_path: 'timeseries>61ca57f2-469d-11e7-af02-69e470af7417',
       },
-    };
+    });
 
-    const modifiedDoc = normalizeQuery(req, panel, series)(next)(doc);
+    const modifiedDoc = await normalizeQuery(tableRequestProcessorsParams)(next)(doc);
 
     expect(modifiedDoc.aggs.pivot.aggs[seriesId].aggs.timeseries).toBeDefined();
     expect(modifiedDoc.aggs.pivot.aggs[seriesId].aggs[seriesId]).toBeUndefined();

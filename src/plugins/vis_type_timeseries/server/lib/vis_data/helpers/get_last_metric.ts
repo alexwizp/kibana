@@ -6,11 +6,9 @@
  * Side Public License, v 1.
  */
 
-import { mathAgg } from '../series/math';
+import { last } from 'lodash';
 
-export function math(bucket, panel, series, meta, extractFields) {
-  return (next) => (results) => {
-    const mathFn = mathAgg({ aggregations: bucket }, panel, series, meta, extractFields);
-    return mathFn(next)(results);
-  };
-}
+import type { Series, Metric } from '../../../../common/types';
+
+export const getLastMetric = (series: Series) =>
+  last(series.metrics.filter((s) => s.type !== 'series_agg')) as Metric;

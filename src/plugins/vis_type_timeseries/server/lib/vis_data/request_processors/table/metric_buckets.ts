@@ -8,10 +8,14 @@
 
 import { get } from 'lodash';
 import { overwrite } from '../../helpers';
-import { bucketTransform } from '../../helpers/bucket_transform';
 import { calculateAggRoot } from './calculate_agg_root';
 
-export function metricBuckets(req, panel) {
+import type { TableRequestProcessorsFunction } from './types';
+
+// @ts-expect-error not typed yet
+import { bucketTransform } from '../../helpers/bucket_transform';
+
+export const metricBuckets: TableRequestProcessorsFunction = ({ req, panel }) => {
   return (next) => async (doc) => {
     panel.series.forEach((column) => {
       const aggRoot = calculateAggRoot(doc, column);
@@ -33,4 +37,4 @@ export function metricBuckets(req, panel) {
     });
     return next(doc);
   };
-}
+};

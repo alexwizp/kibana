@@ -6,44 +6,49 @@
  * Side Public License, v 1.
  */
 
-import { getTimerange } from '../../helpers/get_timerange';
+import { getTimerange, overwrite } from '../../helpers';
 import { esQuery } from '../../../../../../data/server';
+import type { TableRequestProcessorsFunction } from './types';
 
-export function query(
+export const query: TableRequestProcessorsFunction = ({
   req,
   panel,
   esQueryConfig,
   seriesIndex,
-  capabilities,
-  uiSettings,
-  buildSeriesMetaParams
-) {
+  buildSeriesMetaParams,
+}) => {
   return (next) => async (doc) => {
     const { timeField } = await buildSeriesMetaParams();
     const { from, to } = getTimerange(req);
+    const indexPattern = seriesIndex.indexPattern || undefined;
 
     doc.size = 0;
 
     const queries = !panel.ignore_global_filter ? req.body.query : [];
     const filters = !panel.ignore_global_filter ? req.body.filters : [];
-    doc.query = esQuery.buildEsQuery(seriesIndex.indexPattern, queries, filters, esQueryConfig);
+    doc.query = esQuery.buildEsQuery(indexPattern, queries, filters, esQueryConfig);
 
-    const timerange = {
-      range: {
-        [timeField]: {
-          gte: from.toISOString(),
-          lte: to.toISOString(),
-          format: 'strict_date_optional_time',
+    const boolFilters: unknown[] = [];
+
+    if (timeField) {
+      const timerange = {
+        range: {
+          [timeField]: {
+            gte: from.toISOString(),
+            lte: to.toISOString(),
+            format: 'strict_date_optional_time',
+          },
         },
-      },
-    };
-    doc.query.bool.must.push(timerange);
-    if (panel.filter) {
-      doc.query.bool.must.push(
-        esQuery.buildEsQuery(seriesIndex.indexPattern, [panel.filter], [], esQueryConfig)
-      );
+      };
+
+      boolFilters.push(timerange);
     }
+    if (panel.filter) {
+      boolFilters.push(esQuery.buildEsQuery(indexPattern, [panel.filter], [], esQueryConfig));
+    }
+
+    overwrite(doc, 'query.bool.must', boolFilters);
 
     return next(doc);
   };
-}
+};

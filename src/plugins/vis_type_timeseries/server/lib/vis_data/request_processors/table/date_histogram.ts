@@ -13,23 +13,24 @@ import { getTimerange } from '../../helpers/get_timerange';
 import { calculateAggRoot } from './calculate_agg_root';
 import { search, UI_SETTINGS } from '../../../../../../../plugins/data/server';
 
+import type { TableRequestProcessorsFunction, TableSearchRequestMeta } from './types';
+
 const { dateHistogramInterval } = search.aggs;
 
-export function dateHistogram(
+export const dateHistogram: TableRequestProcessorsFunction = ({
   req,
   panel,
-  esQueryConfig,
   seriesIndex,
   capabilities,
   uiSettings,
-  buildSeriesMetaParams
-) {
+  buildSeriesMetaParams,
+}) => {
   return (next) => async (doc) => {
     const barTargetUiSettings = await uiSettings.get(UI_SETTINGS.HISTOGRAM_BAR_TARGET);
     const { timeField, interval } = await buildSeriesMetaParams();
     const { from, to } = getTimerange(req);
 
-    const meta = {
+    const meta: TableSearchRequestMeta = {
       timeField,
       index: panel.use_kibana_indexes ? seriesIndex.indexPattern?.id : undefined,
       panelId: panel.id,
@@ -78,10 +79,12 @@ export function dateHistogram(
       });
     };
 
-    isLastValueTimerangeMode(panel)
-      ? overwriteDateHistogramForLastBucketMode()
-      : overwriteDateHistogramForEntireTimerangeMode();
+    if (isLastValueTimerangeMode(panel)) {
+      overwriteDateHistogramForLastBucketMode();
+    } else {
+      overwriteDateHistogramForEntireTimerangeMode();
+    }
 
     return next(doc);
   };
-}
+};

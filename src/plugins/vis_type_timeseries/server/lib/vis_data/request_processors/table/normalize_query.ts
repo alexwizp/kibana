@@ -6,9 +6,14 @@
  * Side Public License, v 1.
  */
 
-import _ from 'lodash';
+import { get, forEach, isEmpty } from 'lodash';
 import { overwrite } from '../../helpers';
-const isEmptyFilter = (filter = {}) => Boolean(filter.match_all) && _.isEmpty(filter.match_all);
+
+import type { TableRequestProcessorsFunction } from './types';
+
+const isEmptyFilter = (filter: { match_all?: string }) =>
+  filter && Boolean(filter.match_all) && isEmpty(filter.match_all);
+
 const hasSiblingPipelineAggregation = (aggs = {}) => Object.keys(aggs).length > 1;
 
 /* Last query handler in the chain. You can use this handler
@@ -17,18 +22,18 @@ const hasSiblingPipelineAggregation = (aggs = {}) => Object.keys(aggs).length > 
  * Important: for Sibling Pipeline aggregation we cannot apply this logic
  *
  */
-export function normalizeQuery() {
+export const normalizeQuery: TableRequestProcessorsFunction = () => {
   return () => (doc) => {
-    const series = _.get(doc, 'aggs.pivot.aggs');
+    const series = get(doc, 'aggs.pivot.aggs');
     const normalizedSeries = {};
 
-    _.forEach(series, (value, seriesId) => {
-      const filter = _.get(value, `filter`);
+    forEach(series, (value, seriesId) => {
+      const filter = get(value, `filter`);
 
       if (isEmptyFilter(filter) && !hasSiblingPipelineAggregation(value.aggs)) {
-        const agg = _.get(value, 'aggs.timeseries');
+        const agg = get(value, 'aggs.timeseries');
         const meta = {
-          ..._.get(value, 'meta'),
+          ...get(value, 'meta'),
           seriesId,
         };
         overwrite(normalizedSeries, `${seriesId}`, agg);
@@ -42,4 +47,4 @@ export function normalizeQuery() {
 
     return doc;
   };
-}
+};

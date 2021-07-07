@@ -7,13 +7,24 @@
  */
 
 import { esQuery } from '../../../../../../data/server';
-import { bucketTransform } from '../../helpers/bucket_transform';
 import { overwrite } from '../../helpers';
 import { calculateAggRoot } from './calculate_agg_root';
 
-const filter = (metric) => metric.type === 'filter_ratio';
+// @ts-expect-error not typed yet
+import { bucketTransform } from '../../helpers/bucket_transform';
 
-export function ratios(req, panel, esQueryConfig, seriesIndex) {
+import type { TableRequestProcessorsFunction } from './types';
+import type { Metric } from '../../../../../common/types';
+
+const filter = (metric: Metric) => metric.type === 'filter_ratio';
+
+export const filterRatios: TableRequestProcessorsFunction = ({
+  panel,
+  esQueryConfig,
+  seriesIndex,
+}) => {
+  const indexPattern = seriesIndex.indexPattern || undefined;
+
   return (next) => (doc) => {
     panel.series.forEach((column) => {
       const aggRoot = calculateAggRoot(doc, column);
@@ -22,12 +33,12 @@ export function ratios(req, panel, esQueryConfig, seriesIndex) {
           overwrite(
             doc,
             `${aggRoot}.timeseries.aggs.${metric.id}-numerator.filter`,
-            esQuery.buildEsQuery(seriesIndex.indexPattern, metric.numerator, [], esQueryConfig)
+            esQuery.buildEsQuery(indexPattern, metric.numerator!, [], esQueryConfig)
           );
           overwrite(
             doc,
             `${aggRoot}.timeseries.aggs.${metric.id}-denominator.filter`,
-            esQuery.buildEsQuery(seriesIndex.indexPattern, metric.denominator, [], esQueryConfig)
+            esQuery.buildEsQuery(indexPattern, metric.denominator!, [], esQueryConfig)
           );
 
           let numeratorPath = `${metric.id}-numerator>_count`;
@@ -61,4 +72,4 @@ export function ratios(req, panel, esQueryConfig, seriesIndex) {
     });
     return next(doc);
   };
-}
+};

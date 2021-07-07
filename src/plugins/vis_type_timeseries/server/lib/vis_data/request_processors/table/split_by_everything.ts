@@ -9,8 +9,16 @@
 import { overwrite } from '../../helpers';
 import { esQuery } from '../../../../../../data/server';
 
-export function splitByEverything(req, panel, esQueryConfig, seriesIndex) {
+import type { TableRequestProcessorsFunction } from './types';
+
+export const splitByEverything: TableRequestProcessorsFunction = ({
+  panel,
+  esQueryConfig,
+  seriesIndex,
+}) => {
   return (next) => (doc) => {
+    const indexPattern = seriesIndex.indexPattern || undefined;
+
     panel.series
       .filter((c) => !(c.aggregate_by && c.aggregate_function))
       .forEach((column) => {
@@ -18,7 +26,7 @@ export function splitByEverything(req, panel, esQueryConfig, seriesIndex) {
           overwrite(
             doc,
             `aggs.pivot.aggs.${column.id}.filter`,
-            esQuery.buildEsQuery(seriesIndex.indexPattern, [column.filter], [], esQueryConfig)
+            esQuery.buildEsQuery(indexPattern, [column.filter], [], esQueryConfig)
           );
         } else {
           overwrite(doc, `aggs.pivot.aggs.${column.id}.filter.match_all`, {});
@@ -26,4 +34,4 @@ export function splitByEverything(req, panel, esQueryConfig, seriesIndex) {
       });
     return next(doc);
   };
-}
+};

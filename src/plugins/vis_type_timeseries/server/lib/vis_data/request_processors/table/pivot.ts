@@ -11,9 +11,13 @@ import { overwrite } from '../../helpers';
 
 import { basicAggs } from '../../../../../common/basic_aggs';
 import { getBucketsPath } from '../../helpers/get_buckets_path';
+
+// @ts-expect-error not typed yet
 import { bucketTransform } from '../../helpers/bucket_transform';
 
-export function pivot(req, panel) {
+import type { TableRequestProcessorsFunction } from './types';
+
+export const pivot: TableRequestProcessorsFunction = ({ req, panel }) => {
   return (next) => (doc) => {
     const { sort } = req.body.state;
 
@@ -25,7 +29,7 @@ export function pivot(req, panel) {
         const metric = series && last(series.metrics);
         if (metric && metric.type === 'count') {
           overwrite(doc, 'aggs.pivot.terms.order', { _count: sort.order });
-        } else if (metric && basicAggs.includes(metric.type)) {
+        } else if (metric && series && basicAggs.includes(metric.type)) {
           const sortAggKey = `${metric.id}-SORT`;
           const fn = bucketTransform[metric.type];
           const bucketPath = getBucketsPath(metric.id, series.metrics).replace(
@@ -45,4 +49,4 @@ export function pivot(req, panel) {
     }
     return next(doc);
   };
-}
+};

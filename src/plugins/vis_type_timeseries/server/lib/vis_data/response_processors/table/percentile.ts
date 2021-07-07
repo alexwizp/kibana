@@ -7,17 +7,23 @@
  */
 
 import { last } from 'lodash';
-import { getSplits } from '../../helpers/get_splits';
-import { getLastMetric } from '../../helpers/get_last_metric';
+import { getSplits, getLastMetric } from '../../helpers';
 import { toPercentileNumber } from '../../../../../common/to_percentile_number';
-import { getAggValue } from '../../helpers/get_agg_value';
 import { METRIC_TYPES } from '../../../../../common/enums';
 
-export function percentileRank(bucket, panel, series, meta, extractFields) {
+import type { TableResponseProcessorsFunction } from './types';
+
+export const percentile: TableResponseProcessorsFunction = ({
+  bucket,
+  panel,
+  series,
+  meta,
+  extractFields,
+}) => {
   return (next) => async (results) => {
     const metric = getLastMetric(series);
 
-    if (metric.type !== METRIC_TYPES.PERCENTILE_RANK) {
+    if (metric.type !== METRIC_TYPES.PERCENTILE) {
       return next(results);
     }
 
@@ -26,25 +32,18 @@ export function percentileRank(bucket, panel, series, meta, extractFields) {
     };
 
     (await getSplits(fakeResp, panel, series, meta, extractFields)).forEach((split) => {
-      // table allows only one percentile rank in a series (the last one will be chosen in case of several)
-      const lastRankValue = last(metric.values);
-      const percentileRank = toPercentileNumber(lastRankValue);
-
-      const data = split.timeseries.buckets.map((bucket) => [
-        bucket.key,
-        getAggValue(bucket, {
-          ...metric,
-          value: percentileRank,
-        }),
-      ]);
+      // table allows only one percentile in a series (the last one will be chosen in case of several)
+      const lastPercentile = last(metric.percentiles)?.value ?? 0;
+      const percentileKey = toPercentileNumber(lastPercentile);
+      const data = split.timeseries.buckets.map((b) => [b.key, b[metric.id].values[percentileKey]]);
 
       results.push({
-        data,
         id: split.id,
-        label: `${split.label} (${lastRankValue ?? 0})`,
+        label: `${split.label} (${lastPercentile ?? 0})`,
+        data,
       });
     });
 
     return next(results);
   };
-}
+};

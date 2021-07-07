@@ -6,11 +6,14 @@
  * Side Public License, v 1.
  */
 
-import { SeriesAgg } from './_series_agg';
 import { last, first } from 'lodash';
+
+import { SeriesAgg } from './_series_agg';
 import { calculateLabel } from '../../../../../common/calculate_label';
 
-export function seriesAgg(resp, panel, series, meta, extractFields) {
+import type { TableResponseProcessorsFunction } from './types';
+
+export const seriesAgg: TableResponseProcessorsFunction = ({ series, meta, extractFields }) => {
   return (next) => async (results) => {
     if (series.aggregate_by && series.aggregate_function) {
       const targetSeries = [];
@@ -36,4 +39,4 @@ export function seriesAgg(resp, panel, series, meta, extractFields) {
     }
     return next(results);
   };
-}
+};

@@ -6,11 +6,10 @@
  * Side Public License, v 1.
  */
 
-import { _legacyBuildProcessorFunction } from '../build_processor_function';
-import { processors } from '../request_processors/table';
-
-export async function buildRequestBody(...args) {
-  const processor = _legacyBuildProcessorFunction(processors, ...args);
-  const doc = await processor({});
-  return doc;
-}
+export { stdMetric } from './std_metric';
+export { stdSibling } from './std_sibling';
+export { seriesAgg } from './series_agg';
+export { percentile } from './percentile';
+export { percentileRank } from './percentile_rank';
+export { math } from './math';
+export { dropLastBucketFn } from './drop_last_bucket';

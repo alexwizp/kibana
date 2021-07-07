@@ -9,7 +9,15 @@
 import { getSplits, getLastMetric, mapEmptyToZero } from '../../helpers';
 import { METRIC_TYPES } from '../../../../../common/enums';
 
-export function stdMetric(bucket, panel, series, meta, extractFields) {
+import type { TableResponseProcessorsFunction } from './types';
+
+export const stdMetric: TableResponseProcessorsFunction = ({
+  bucket,
+  panel,
+  series,
+  meta,
+  extractFields,
+}) => {
   return (next) => async (results) => {
     const metric = getLastMetric(series);
 
@@ -29,7 +37,7 @@ export function stdMetric(bucket, panel, series, meta, extractFields) {
       aggregations: bucket,
     };
 
-    (await getSplits(fakeResp, panel, series, meta, extractFields)).forEach((split) => {
+    (await getSplits(fakeResp, panel, series, meta, extractFields)).forEach((split: any) => {
       const data = mapEmptyToZero(metric, split.timeseries.buckets);
       results.push({
         id: split.id,
@@ -40,4 +48,4 @@ export function stdMetric(bucket, panel, series, meta, extractFields) {
 
     return next(results);
   };
-}
+};

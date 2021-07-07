@@ -6,10 +6,14 @@
  * Side Public License, v 1.
  */
 
-import { dropLastBucket } from '../series/drop_last_bucket';
-import { isLastValueTimerangeMode } from '../../helpers/get_timerange_mode';
+import { isLastValueTimerangeMode } from '../../helpers';
 
-export function dropLastBucketFn(bucket, panel, series) {
+// @ts-expect-error no typed yet
+import { dropLastBucket } from '../series/drop_last_bucket';
+
+import type { TableResponseProcessorsFunction } from './types';
+
+export const dropLastBucketFn: TableResponseProcessorsFunction = ({ bucket, panel, series }) => {
   return (next) => (results) => {
     const shouldDropLastBucket = isLastValueTimerangeMode(panel);
 
@@ -21,4 +25,4 @@ export function dropLastBucketFn(bucket, panel, series) {
 
     return next(results);
   };
-}
+};

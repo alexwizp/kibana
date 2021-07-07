@@ -8,18 +8,20 @@
 
 import { getBucketSize } from '../../helpers/get_bucket_size';
 import { calculateAggRoot } from './calculate_agg_root';
-import { createPositiveRate, filter } from '../series/positive_rate';
 import { UI_SETTINGS } from '../../../../../../data/common';
 
-export function positiveRate(
+import type { TableRequestProcessorsFunction } from './types';
+
+// @ts-expect-error not typed yet
+import { createPositiveRate, filter } from '../series/positive_rate';
+
+export const positiveRate: TableRequestProcessorsFunction = ({
   req,
   panel,
-  esQueryConfig,
-  seriesIndex,
   capabilities,
   uiSettings,
-  buildSeriesMetaParams
-) {
+  buildSeriesMetaParams,
+}) => {
   return (next) => async (doc) => {
     const barTargetUiSettings = await uiSettings.get(UI_SETTINGS.HISTOGRAM_BAR_TARGET);
     const { interval } = await buildSeriesMetaParams();
@@ -31,4 +33,4 @@ export function positiveRate(
     });
     return next(doc);
   };
-}
+};

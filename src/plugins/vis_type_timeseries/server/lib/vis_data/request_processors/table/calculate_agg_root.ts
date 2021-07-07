@@ -6,11 +6,14 @@
  * Side Public License, v 1.
  */
 
-import _ from 'lodash';
+import { has } from 'lodash';
 
-export function calculateAggRoot(doc, column) {
+import type { TableSearchRequest } from '../table/types';
+import type { Series } from '../../../../../common/types';
+
+export function calculateAggRoot(doc: TableSearchRequest, column: Series) {
   let aggRoot = `aggs.pivot.aggs.${column.id}.aggs`;
-  if (_.has(doc, `aggs.pivot.aggs.${column.id}.aggs.column_filter`)) {
+  if (has(doc, `aggs.pivot.aggs.${column.id}.aggs.column_filter`)) {
     aggRoot = `aggs.pivot.aggs.${column.id}.aggs.column_filter.aggs`;
   }
   return aggRoot;
