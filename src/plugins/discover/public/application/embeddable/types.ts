@@ -13,7 +13,7 @@ import {
   IEmbeddable,
 } from 'src/plugins/embeddable/public';
 import { Filter, IndexPattern, TimeRange, Query } from '../../../../data/public';
-import { SavedSearch } from '../..';
+import { LegacySavedSearch } from '../..';
 import { SortOrder } from '../apps/main/components/doc_table/components/table_header/helpers';
 
 export interface SearchInput extends EmbeddableInput {
@@ -32,7 +32,7 @@ export interface SearchOutput extends EmbeddableOutput {
 }
 
 export interface ISearchEmbeddable extends IEmbeddable<SearchInput, SearchOutput> {
-  getSavedSearch(): SavedSearch;
+  getSavedSearch(): LegacySavedSearch;
 }
 
 export interface SearchEmbeddable extends Embeddable<SearchInput, SearchOutput> {

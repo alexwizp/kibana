@@ -9,13 +9,13 @@
 import { cloneDeep } from 'lodash';
 import { IUiSettingsClient } from 'kibana/public';
 import { DEFAULT_COLUMNS_SETTING, SORT_DEFAULT_ORDER_SETTING } from '../../../../../common';
-import { SavedSearch } from '../../../../saved_searches';
+import { LegacySavedSearch } from '../../../../saved_searches';
 import { DataPublicPluginStart } from '../../../../../../data/public';
 
 import { AppState } from '../services/discover_state';
 import { getDefaultSort, getSortArray } from '../components/doc_table';
 
-function getDefaultColumns(savedSearch: SavedSearch, config: IUiSettingsClient) {
+function getDefaultColumns(savedSearch: LegacySavedSearch, config: IUiSettingsClient) {
   if (savedSearch.columns && savedSearch.columns.length > 0) {
     return [...savedSearch.columns];
   }
@@ -29,7 +29,7 @@ export function getStateDefaults({
 }: {
   config: IUiSettingsClient;
   data: DataPublicPluginStart;
-  savedSearch: SavedSearch;
+  savedSearch: LegacySavedSearch;
 }) {
   const searchSource = savedSearch.searchSource;
   const indexPattern = savedSearch.searchSource.getField('index');

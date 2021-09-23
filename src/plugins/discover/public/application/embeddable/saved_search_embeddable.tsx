@@ -13,7 +13,7 @@ import { i18n } from '@kbn/i18n';
 import { isEqual } from 'lodash';
 import { Container, Embeddable } from '../../../../embeddable/public';
 import { ISearchEmbeddable, SearchInput, SearchOutput } from './types';
-import { SavedSearch } from '../../saved_searches';
+import { LegacySavedSearch } from '../../saved_searches';
 import { Adapters, RequestAdapter } from '../../../../inspector/common';
 import { SEARCH_EMBEDDABLE_TYPE } from './constants';
 import { APPLY_FILTER_TRIGGER, esFilters, FilterManager } from '../../../../data/public';
@@ -60,7 +60,7 @@ export type SearchProps = Partial<DiscoverGridProps> &
   };
 
 interface SearchEmbeddableConfig {
-  savedSearch: SavedSearch;
+  savedSearch: LegacySavedSearch;
   editUrl: string;
   editPath: string;
   indexPatterns?: IndexPattern[];
@@ -73,7 +73,7 @@ export class SavedSearchEmbeddable
   extends Embeddable<SearchInput, SearchOutput>
   implements ISearchEmbeddable
 {
-  private readonly savedSearch: SavedSearch;
+  private readonly savedSearch: LegacySavedSearch;
   private inspectorAdapters: Adapters;
   private panelTitle: string = '';
   private filtersSearchSource!: ISearchSource;
@@ -394,7 +394,7 @@ export class SavedSearchEmbeddable
     }
   }
 
-  public getSavedSearch(): SavedSearch {
+  public getSavedSearch(): LegacySavedSearch {
     return this.savedSearch;
   }
 

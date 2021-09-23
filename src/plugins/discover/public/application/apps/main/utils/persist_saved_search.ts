@@ -8,9 +8,9 @@
 
 import { updateSearchSource } from './update_search_source';
 import { IndexPattern } from '../../../../../../data/public';
-import { SavedSearch } from '../../../../saved_searches';
+import { LegacySavedSearch } from '../../../../saved_searches';
 import { AppState } from '../services/discover_state';
-import { SortOrder } from '../../../../saved_searches/types';
+import type { SortOrder } from '../../../../saved_searches';
 import { SavedObjectSaveOpts } from '../../../../../../saved_objects/public';
 import { DiscoverServices } from '../../../../build_services';
 
@@ -18,7 +18,7 @@ import { DiscoverServices } from '../../../../build_services';
  * Helper function to update and persist the given savedSearch
  */
 export async function persistSavedSearch(
-  savedSearch: SavedSearch,
+  savedSearch: LegacySavedSearch,
   {
     indexPattern,
     onError,
@@ -28,7 +28,7 @@ export async function persistSavedSearch(
     state,
   }: {
     indexPattern: IndexPattern;
-    onError: (error: Error, savedSearch: SavedSearch) => void;
+    onError: (error: Error, savedSearch: LegacySavedSearch) => void;
     onSuccess: (id: string) => void;
     saveOptions: SavedObjectSaveOpts;
     services: DiscoverServices;

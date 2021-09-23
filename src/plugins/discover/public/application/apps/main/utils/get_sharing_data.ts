@@ -11,7 +11,7 @@ import type { IUiSettingsClient } from 'src/core/public';
 import type { DataPublicPluginStart } from 'src/plugins/data/public';
 import type { ISearchSource } from 'src/plugins/data/common';
 import { DOC_HIDE_TIME_COLUMN_SETTING, SORT_DEFAULT_ORDER_SETTING } from '../../../../../common';
-import type { SavedSearch, SortOrder } from '../../../../saved_searches/types';
+import type { LegacySavedSearch, SortOrder } from '../../../../saved_searches';
 import { getSortForSearchSource } from '../components/doc_table';
 import { AppState } from '../services/discover_state';
 
@@ -20,7 +20,7 @@ import { AppState } from '../services/discover_state';
  */
 export async function getSharingData(
   currentSearchSource: ISearchSource,
-  state: AppState | SavedSearch,
+  state: AppState | LegacySavedSearch,
   services: { uiSettings: IUiSettingsClient; data: DataPublicPluginStart }
 ) {
   const { uiSettings: config, data } = services;

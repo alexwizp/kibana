@@ -13,7 +13,7 @@ import { showOpenSearchPanel } from './show_open_search_panel';
 import { getSharingData, showPublicUrlSwitch } from '../../utils/get_sharing_data';
 import { unhashUrl } from '../../../../../../../kibana_utils/public';
 import { DiscoverServices } from '../../../../../build_services';
-import { SavedSearch } from '../../../../../saved_searches';
+import { LegacySavedSearch } from '../../../../../saved_searches';
 import { onSaveSearch } from './on_save_search';
 import { GetStateReturn } from '../../services/discover_state';
 import { openOptionsPopover } from './open_options_popover';
@@ -33,7 +33,7 @@ export const getTopNavLinks = ({
 }: {
   indexPattern: IndexPattern;
   navigateTo: (url: string) => void;
-  savedSearch: SavedSearch;
+  savedSearch: LegacySavedSearch;
   services: DiscoverServices;
   state: GetStateReturn;
   onOpenInspector: () => void;

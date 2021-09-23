@@ -33,7 +33,7 @@ import {
 import { migrateLegacyQuery } from '../../../helpers/migrate_legacy_query';
 import { DiscoverGridSettings } from '../../../components/discover_grid/types';
 import { DISCOVER_APP_URL_GENERATOR, DiscoverUrlGeneratorState } from '../../../../url_generator';
-import { SavedSearch } from '../../../../saved_searches';
+import { LegacySavedSearch } from '../../../../saved_searches';
 import { handleSourceColumnState } from '../../../helpers/state_helpers';
 
 export interface AppState {
@@ -336,7 +336,7 @@ export function isEqualState(stateA: AppState, stateB: AppState) {
 export function createSearchSessionRestorationDataProvider(deps: {
   appStateContainer: StateContainer<AppState>;
   data: DataPublicPluginStart;
-  getSavedSearch: () => SavedSearch;
+  getSavedSearch: () => LegacySavedSearch;
 }): SearchSessionInfoProvider {
   const getSavedSearchId = () => deps.getSavedSearch().id;
   return {

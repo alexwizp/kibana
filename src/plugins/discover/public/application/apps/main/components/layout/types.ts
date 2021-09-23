@@ -17,7 +17,7 @@ import { ISearchSource } from '../../../../../../../data/public';
 import { AppState, GetStateReturn } from '../../services/discover_state';
 import { DataRefetch$, SavedSearchData } from '../../services/use_saved_search';
 import { DiscoverServices } from '../../../../../build_services';
-import { SavedSearch } from '../../../../../saved_searches';
+import { LegacySavedSearch } from '../../../../../saved_searches';
 import { RequestAdapter } from '../../../../../../../inspector';
 
 export interface DiscoverLayoutProps {
@@ -28,7 +28,7 @@ export interface DiscoverLayoutProps {
   onChangeIndexPattern: (id: string) => void;
   onUpdateQuery: (payload: { dateRange: TimeRange; query?: Query }, isUpdate?: boolean) => void;
   resetSavedSearch: () => void;
-  savedSearch: SavedSearch;
+  savedSearch: LegacySavedSearch;
   savedSearchData$: SavedSearchData;
   savedSearchRefetch$: DataRefetch$;
   searchSource: ISearchSource;

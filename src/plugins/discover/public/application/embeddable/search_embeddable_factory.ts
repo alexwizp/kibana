@@ -20,6 +20,7 @@ import { TimeRange } from '../../../../data/public';
 import { SearchInput, SearchOutput } from './types';
 import { SEARCH_EMBEDDABLE_TYPE } from './constants';
 import { SavedSearchEmbeddable } from './saved_search_embeddable';
+import { getSavedSearchUrl } from '../../saved_searches';
 
 interface StartServices {
   executeTriggerActions: UiActionsStart['executeTriggerActions'];
@@ -60,8 +61,7 @@ export class SearchEmbeddableFactory
     parent?: Container
   ): Promise<SavedSearchEmbeddable | ErrorEmbeddable> => {
     const filterManager = getServices().filterManager;
-
-    const url = await getServices().getSavedSearchUrlById(savedObjectId);
+    const url = getSavedSearchUrl(savedObjectId);
     const editUrl = getServices().addBasePath(`/app/discover${url}`);
     try {
       const savedObject = await getServices().getSavedSearchById(savedObjectId);

@@ -12,7 +12,7 @@ import { i18n } from '@kbn/i18n';
 import { HitsCounter } from '../hits_counter';
 import { search } from '../../../../../../../data/public';
 import { TimechartHeader } from '../timechart_header';
-import { SavedSearch } from '../../../../../saved_searches';
+import { LegacySavedSearch } from '../../../../../saved_searches';
 import { AppState, GetStateReturn } from '../../services/discover_state';
 import { DiscoverHistogram } from './histogram';
 import { DataCharts$, DataTotalHits$ } from '../../services/use_saved_search';
@@ -31,7 +31,7 @@ export function DiscoverChart({
   timefield,
 }: {
   resetSavedSearch: () => void;
-  savedSearch: SavedSearch;
+  savedSearch: LegacySavedSearch;
   savedSearchDataChart$: DataCharts$;
   savedSearchDataTotalHits$: DataTotalHits$;
   services: DiscoverServices;

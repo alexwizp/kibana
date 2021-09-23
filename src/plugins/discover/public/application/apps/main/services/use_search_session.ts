@@ -11,7 +11,7 @@ import { DiscoverSearchSessionManager } from './discover_search_session';
 import { createSearchSessionRestorationDataProvider, GetStateReturn } from './discover_state';
 import { noSearchSessionStorageCapabilityMessage } from '../../../../../../data/public';
 import { DiscoverServices } from '../../../../build_services';
-import { SavedSearch } from '../../../../saved_searches';
+import { LegacySavedSearch } from '../../../../saved_searches';
 
 export function useSearchSession({
   services,
@@ -22,7 +22,7 @@ export function useSearchSession({
   services: DiscoverServices;
   stateContainer: GetStateReturn;
   history: History;
-  savedSearch: SavedSearch;
+  savedSearch: LegacySavedSearch;
 }) {
   const { data, capabilities } = services;
   /**

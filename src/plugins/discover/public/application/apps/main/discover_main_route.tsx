@@ -11,7 +11,7 @@ import { useParams } from 'react-router-dom';
 import type { SavedObject as SavedObjectDeprecated } from 'src/plugins/saved_objects/public';
 import { IndexPatternAttributes, SavedObject } from 'src/plugins/data/common';
 import { DiscoverServices } from '../../../build_services';
-import { SavedSearch } from '../../../saved_searches';
+import { LegacySavedSearch } from '../../../saved_searches';
 import { getState } from './services/discover_state';
 import { loadIndexPattern, resolveIndexPattern } from './utils/resolve_index_pattern';
 import { DiscoverMainApp } from './discover_main_app';
@@ -47,7 +47,7 @@ export function DiscoverMainRoute({ services, history }: DiscoverMainProps) {
     http: { basePath },
   } = services;
 
-  const [savedSearch, setSavedSearch] = useState<SavedSearch>();
+  const [savedSearch, setSavedSearch] = useState<LegacySavedSearch>();
   const indexPattern = savedSearch?.searchSource?.getField('index');
   const [indexPatternList, setIndexPatternList] = useState<
     Array<SavedObject<IndexPatternAttributes>>
@@ -58,7 +58,7 @@ export function DiscoverMainRoute({ services, history }: DiscoverMainProps) {
   useEffect(() => {
     const savedSearchId = id;
 
-    async function loadDefaultOrCurrentIndexPattern(usedSavedSearch: SavedSearch) {
+    async function loadDefaultOrCurrentIndexPattern(usedSavedSearch: LegacySavedSearch) {
       await data.indexPatterns.ensureDefaultDataView();
       const { appStateContainer } = getState({ history, uiSettings: config });
       const { index } = appStateContainer.getState();

@@ -14,7 +14,14 @@ export function plugin(initializerContext: PluginInitializerContext) {
   return new DiscoverPlugin(initializerContext);
 }
 
-export { SavedSearch, SavedSearchLoader, createSavedSearchesLoader } from './saved_searches';
+export {
+  getSavedSearch,
+  LegacySavedSearch,
+  SavedSearchLoader,
+  __LEGACY,
+  SavedSearch,
+} from './saved_searches';
+
 export { ISearchEmbeddable, SEARCH_EMBEDDABLE_TYPE, SearchInput } from './application/embeddable';
 export { loadSharingDataHelpers } from './shared';
 

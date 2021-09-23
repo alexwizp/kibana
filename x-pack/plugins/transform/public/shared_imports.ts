@@ -5,7 +5,7 @@
  * 2.0.
  */
 
-export { createSavedSearchesLoader } from '../../../../src/plugins/discover/public';
+export { getSavedSearch } from '../../../../src/plugins/discover/public';
 export { XJsonMode } from '@kbn/ace';
 export { UseRequestConfig, useRequest } from '../../../../src/plugins/es_ui_shared/public';
 

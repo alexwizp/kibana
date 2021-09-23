@@ -6,7 +6,7 @@
  * Side Public License, v 1.
  */
 
-import { SavedSearch } from '../saved_searches';
+import { LegacySavedSearch } from '../saved_searches';
 import { createSearchSourceMock } from '../../../data/public/mocks';
 import { indexPatternMock } from './index_pattern';
 import { indexPatternWithTimefieldMock } from './index_pattern_with_timefield';
@@ -31,7 +31,7 @@ export const savedSearchMock = {
   migrationVersion: { search: '7.5.0' },
   error: undefined,
   searchSource: createSearchSourceMock({ index: indexPatternMock }),
-} as unknown as SavedSearch;
+} as unknown as LegacySavedSearch;
 
 export const savedSearchMockWithTimeField = {
   id: 'the-saved-search-id-with-timefield',
@@ -53,4 +53,4 @@ export const savedSearchMockWithTimeField = {
   migrationVersion: { search: '7.5.0' },
   error: undefined,
   searchSource: createSearchSourceMock({ index: indexPatternWithTimefieldMock }),
-} as unknown as SavedSearch;
+} as unknown as LegacySavedSearch;

@@ -9,7 +9,7 @@
 import React from 'react';
 import { i18n } from '@kbn/i18n';
 import { SavedObjectSaveModal, showSaveModal } from '../../../../../../../saved_objects/public';
-import { SavedSearch } from '../../../../../saved_searches';
+import { LegacySavedSearch } from '../../../../../saved_searches';
 import { IndexPattern } from '../../../../../../../data/common';
 import { DiscoverServices } from '../../../../../build_services';
 import { GetStateReturn } from '../../services/discover_state';
@@ -26,7 +26,7 @@ async function saveDataSource({
 }: {
   indexPattern: IndexPattern;
   navigateTo: (url: string) => void;
-  savedSearch: SavedSearch;
+  savedSearch: LegacySavedSearch;
   saveOptions: {
     confirmOverwrite: boolean;
     isTitleDuplicateConfirmed: boolean;
@@ -89,7 +89,7 @@ export async function onSaveSearch({
 }: {
   indexPattern: IndexPattern;
   navigateTo: (path: string) => void;
-  savedSearch: SavedSearch;
+  savedSearch: LegacySavedSearch;
   services: DiscoverServices;
   state: GetStateReturn;
 }) {

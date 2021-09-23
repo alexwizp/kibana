@@ -14,7 +14,7 @@ import { useDiscoverState } from './services/use_discover_state';
 import { useUrl } from './services/use_url';
 import { IndexPatternAttributes, SavedObject } from '../../../../../data/common';
 import { DiscoverServices } from '../../../build_services';
-import { SavedSearch } from '../../../saved_searches';
+import { LegacySavedSearch } from '../../../saved_searches';
 
 const DiscoverLayoutMemoized = React.memo(DiscoverLayout);
 
@@ -34,7 +34,7 @@ export interface DiscoverMainProps {
   /**
    * Current instance of SavedSearch
    */
-  savedSearch: SavedSearch;
+  savedSearch: LegacySavedSearch;
 }
 
 export function DiscoverMainApp(props: DiscoverMainProps) {

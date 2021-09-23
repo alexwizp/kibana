@@ -25,18 +25,18 @@ import { FormattedMessage } from '@kbn/i18n/react';
 import { i18n } from '@kbn/i18n';
 
 import { Vis } from 'src/plugins/visualizations/public';
-import { SavedObject } from 'src/plugins/saved_objects/public';
+import { SavedSearch } from 'src/plugins/discover/public';
 import { ApplicationStart } from '../../../../../core/public';
 import { useKibana } from '../../../../kibana_react/public';
 
 interface LinkedSearchProps {
-  savedSearch: SavedObject;
+  savedSearch: SavedSearch;
   eventEmitter: EventEmitter;
 }
 
 interface SidebarTitleProps {
   isLinkedSearch: boolean;
-  savedSearch?: SavedObject;
+  savedSearch?: SavedSearch;
   vis: Vis;
   eventEmitter: EventEmitter;
 }

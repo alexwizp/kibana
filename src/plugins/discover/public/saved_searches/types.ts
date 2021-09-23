@@ -6,26 +6,20 @@
  * Side Public License, v 1.
  */
 
-import { SearchSource } from '../../../data/public';
-import { SavedObjectSaveOpts } from '../../../saved_objects/public';
-import { DiscoverGridSettings } from '../application/components/discover_grid/types';
+import type { SimpleSavedObject } from '../../../../core/public';
+import type { ISearchSource } from '../../../data/public';
 
-export type SortOrder = [string, string];
+/** @internal **/
+export interface SavedSearchAttributes extends SimpleSavedObject {
+  title: string;
+  kibanaSavedObjectMeta: {
+    searchSourceJSON: string;
+  };
+}
+
+/** @public **/
 export interface SavedSearch {
   readonly id: string;
   title: string;
-  searchSource: SearchSource;
-  description?: string;
-  columns: string[];
-  sort: SortOrder[];
-  grid: DiscoverGridSettings;
-  destroy: () => void;
-  save: (saveOptions: SavedObjectSaveOpts) => Promise<string>;
-  lastSavedTitle?: string;
-  copyOnSave?: boolean;
-  hideChart?: boolean;
-}
-export interface SavedSearchLoader {
-  get: (id: string) => Promise<SavedSearch>;
-  urlFor: (id: string) => string;
+  searchSource: ISearchSource;
 }

@@ -6,5 +6,14 @@
  * Side Public License, v 1.
  */
 
-export { createSavedSearchesLoader } from './saved_searches';
-export { SavedSearch, SavedSearchLoader } from './types';
+export { getSavedSearch } from './get_saved_searches';
+export { getSavedSearchUrl, getSavedSearchFullPathUrl } from './saved_searches_utils';
+export type { SavedSearch } from './types';
+
+import { createSavedSearchesLoader } from './legacy/saved_searches';
+export type { LegacySavedSearch, SavedSearchLoader, SortOrder } from './legacy/types';
+
+/** @deprecated __LEGACY object will be removed in v8**/
+export const __LEGACY = {
+  createSavedSearchesLoader,
+};

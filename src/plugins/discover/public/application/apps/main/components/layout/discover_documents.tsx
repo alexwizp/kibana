@@ -25,7 +25,7 @@ import {
 } from '../../../../../../common';
 import { useDataGridColumns } from '../../../../helpers/use_data_grid_columns';
 import { IndexPattern } from '../../../../../../../data/common';
-import { SavedSearch } from '../../../../../saved_searches';
+import { LegacySavedSearch } from '../../../../../saved_searches';
 import { DataDocumentsMsg, DataDocuments$ } from '../../services/use_saved_search';
 import { DiscoverServices } from '../../../../../build_services';
 import { AppState, GetStateReturn } from '../../services/discover_state';
@@ -52,7 +52,7 @@ function DiscoverDocumentsComponent({
   indexPattern: IndexPattern;
   navigateTo: (url: string) => void;
   onAddFilter: DocViewFilterFn;
-  savedSearch: SavedSearch;
+  savedSearch: LegacySavedSearch;
   services: DiscoverServices;
   setExpandedDoc: (doc: ElasticSearchHit | undefined) => void;
   state: AppState;

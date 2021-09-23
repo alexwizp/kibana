@@ -8,7 +8,7 @@
 
 import { ChromeStart } from 'kibana/public';
 import { i18n } from '@kbn/i18n';
-import { SavedSearch } from '../../saved_searches';
+import { LegacySavedSearch } from '../../saved_searches';
 
 export function getRootBreadcrumbs() {
   return [
@@ -34,7 +34,7 @@ export function getSavedSearchBreadcrumbs(id: string) {
  * Helper function to set the Discover's breadcrumb
  * if there's an active savedSearch, its title is appended
  */
-export function setBreadcrumbsTitle(savedSearch: SavedSearch, chrome: ChromeStart) {
+export function setBreadcrumbsTitle(savedSearch: LegacySavedSearch, chrome: ChromeStart) {
   const discoverBreadcrumbsTitle = i18n.translate('discover.discoverBreadcrumbTitle', {
     defaultMessage: 'Discover',
   });

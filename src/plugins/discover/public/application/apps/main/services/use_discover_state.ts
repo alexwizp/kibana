@@ -11,7 +11,7 @@ import { History } from 'history';
 import { getState } from './discover_state';
 import { getStateDefaults } from '../utils/get_state_defaults';
 import { DiscoverServices } from '../../../../build_services';
-import { SavedSearch } from '../../../../saved_searches';
+import { LegacySavedSearch } from '../../../../saved_searches';
 import { loadIndexPattern } from '../utils/resolve_index_pattern';
 import { useSavedSearch as useSavedSearchData } from './use_saved_search';
 import {
@@ -31,7 +31,7 @@ export function useDiscoverState({
   savedSearch,
 }: {
   services: DiscoverServices;
-  savedSearch: SavedSearch;
+  savedSearch: LegacySavedSearch;
   history: History;
 }) {
   const { uiSettings: config, data, filterManager, indexPatterns } = services;
