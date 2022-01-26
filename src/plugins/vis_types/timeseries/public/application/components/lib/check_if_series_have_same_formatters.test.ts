@@ -33,6 +33,7 @@ describe('checkIfSeriesHaveSameFormatters(seriesModel, fieldFormatMap)', () => {
         value_template: '{{value}} first',
       },
       {
+        
         formatter: DATA_FORMATTERS.PERCENT,
         value_template: '{{value}} second',
       },
