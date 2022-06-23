@@ -54,7 +54,7 @@ export const getTimeseriesVisRenderer: (deps: {
       // We need to wait a little to be sure that all inner components will be fully rendered.
       // Important for reporting!
       setTimeout(() => {
-        handlers.done();
+        handlers.done({ renderTelemetry: { visType: 'tsvb', suffix: model.type } });
       }, 350);
     };
 

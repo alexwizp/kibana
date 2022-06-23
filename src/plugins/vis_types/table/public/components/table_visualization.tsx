@@ -33,7 +33,7 @@ const TableVisualizationComponent = ({
   visConfig,
 }: TableVisualizationComponentProps) => {
   useEffect(() => {
-    handlers.done();
+    handlers.done({ renderTelemetry: { visType: 'table', prefix: 'agg_based' } });
   }, [handlers]);
 
   const uiStateProps = useUiState(handlers.uiState as PersistedState);

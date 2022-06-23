@@ -33,7 +33,7 @@ export const getVegaVisRenderer: (
           <LazyVegaVisComponent
             deps={deps}
             fireEvent={handlers.event}
-            renderComplete={handlers.done}
+            renderComplete={() => handlers.done({ renderTelemetry: { visType: 'vega' } })}
             renderMode={handlers.getRenderMode()}
             visData={visData}
           />

@@ -77,9 +77,13 @@ export class ExpressionRenderHandler {
       onDestroy: (fn: Function) => {
         this.destroyFn = fn;
       },
-      done: () => {
+      done: (context) => {
         this.renderCount++;
         this.renderSubject.next(this.renderCount);
+
+        if (context?.renderTelemetry) {
+          console.log(1, context);
+        }
       },
       reload: () => {
         this.updateSubject.next(null);
