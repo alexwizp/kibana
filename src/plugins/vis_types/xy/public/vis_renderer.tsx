@@ -51,7 +51,9 @@ export const getXYVisRenderer: (deps: {
               visParams={visConfig}
               visData={visData}
               renderComplete={() =>
-                handlers.done({ renderTelemetry: { visType: visConfig.type, prefix: 'agg_based' } })
+                handlers.done({
+                  renderTelemetry: { visType: visConfig.type, visGroup: 'agg_based' },
+                })
               }
               fireEvent={handlers.event}
               uiState={handlers.uiState as PersistedState}

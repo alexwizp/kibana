@@ -61,7 +61,7 @@ export const getTimelionVisRenderer: (
                 ariaLabel={visParams.ariaLabel}
                 seriesList={seriesList}
                 renderComplete={() =>
-                  handlers.done({ renderTelemetry: { visType: 'timelion', prefix: 'agg_based' } })
+                  handlers.done({ renderTelemetry: { visType: 'timelion', visGroup: 'agg_based' } })
                 }
                 onBrushEvent={onBrushEvent}
                 syncTooltips={syncTooltips}

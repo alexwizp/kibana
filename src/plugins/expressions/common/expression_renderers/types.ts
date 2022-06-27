@@ -76,8 +76,8 @@ export interface IInterpreterRenderEvent<Context = unknown> {
 export interface IInterpreterRenderHandlersDoneContext {
   renderTelemetry?: {
     visType: string;
-    prefix?: string;
-    suffix?: string;
+    visGroup?: string;
+    events?: string | Array<string | undefined>;
   };
 }
 
