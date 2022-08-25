@@ -149,6 +149,7 @@ export function EmptyDimensionButton({
         groupId: group.groupId,
         filterOperations: group.filterOperations,
         prioritizedOperation: group.prioritizedOperation,
+        enableDropOperationsWithinSameGroup: group.enableDropOperationsWithinSameGroup,
         isNewColumn: true,
       },
       indexPatterns,

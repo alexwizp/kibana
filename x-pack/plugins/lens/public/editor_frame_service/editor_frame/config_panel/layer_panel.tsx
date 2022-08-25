@@ -424,7 +424,7 @@ export function LayerPanel(
                   ) : null
                 }
                 labelType="legend"
-                key={group.groupId + groupIndex}
+                key={group.groupId + group.groupLabel}
                 isInvalid={isMissing}
                 error={isMissing ? isMissingError : []}
               >
@@ -440,7 +440,7 @@ export function LayerPanel(
                             group={group}
                             accessorIndex={accessorIndex}
                             groupIndex={groupIndex}
-                            key={columnId}
+                            key={columnId + group}
                             state={layerDatasourceState}
                             label={columnLabelMap?.[columnId] ?? ''}
                             layerDatasource={layerDatasource}

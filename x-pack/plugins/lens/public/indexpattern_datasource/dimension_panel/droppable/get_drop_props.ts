@@ -44,7 +44,7 @@ export function getNewOperation(
   field: IndexPatternField | undefined | false,
   filterOperations: (meta: OperationMetadata) => boolean,
   targetColumn?: GenericIndexPatternColumn,
-  prioritizedOperation?: GenericIndexPatternColumn['operationType']
+  prioritizedOperation?: GenericIndexPatternColumn['operationType'],
 ) {
   if (!field) {
     return;
@@ -96,8 +96,9 @@ export function getDropProps(props: GetDropPropsArgs) {
       return;
     }
     if (target.columnId !== source.columnId && targetProps.dataView === sourceProps.dataView) {
+      console.log(target, targetProps);
       if (isOperationFromTheSameGroup(source, target)) {
-        return getDropPropsForSameGroup(!targetProps.column);
+        return getDropPropsForSameGroup(!targetProps.column, target.enableDropOperationsWithinSameGroup);
       }
 
       if (targetProps.filterOperations?.(sourceProps?.column)) {

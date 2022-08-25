@@ -248,6 +248,7 @@ export interface GetDropPropsArgs<T = unknown> {
     filterOperations: (meta: OperationMetadata) => boolean;
     prioritizedOperation?: string;
     isNewColumn?: boolean;
+    enableDropOperationsWithinSameGroup?: boolean;
   };
   indexPatterns: IndexPatternMap;
 }
@@ -561,6 +562,7 @@ export interface DragDropOperation {
   groupId: string;
   columnId: string;
   filterOperations: (operation: OperationMetadata) => boolean;
+  enableDropOperationsWithinSameGroup?: boolean
 }
 
 export function isOperation(operationCandidate: unknown): operationCandidate is DragDropOperation {
@@ -706,6 +708,8 @@ export type VisualizationDimensionGroupConfig = SharedDimensionProps & {
   enableFormatSelector?: boolean;
   formatSelectorOptions?: FormatSelectorOptions; // only relevant if supportFieldFormat is true
   labels?: { buttonAriaLabel: string; buttonLabel: string };
+
+  enableDropOperationsWithinSameGroup?: boolean;
 };
 
 export interface VisualizationDimensionChangeProps<T> {

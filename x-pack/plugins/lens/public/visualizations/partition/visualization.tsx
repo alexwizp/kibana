@@ -173,6 +173,7 @@ export const getPieVisualization = ({
                 }
               ),
               supportsMoreColumns: sortedColumns.length === 0,
+              enableDropOperationsWithinSameGroup: true,
               dataTestSubj: 'lnsPie_horizontalAxisDimensionPanel',
               requiredMinDimensionCount: 1,
             },
@@ -191,6 +192,7 @@ export const getPieVisualization = ({
                 }
               ),
               supportsMoreColumns: sortedColumns.length < 2,
+              enableDropOperationsWithinSameGroup: true,
               dataTestSubj: 'lnsPie_verticalAxisDimensionPanel',
             },
           ];

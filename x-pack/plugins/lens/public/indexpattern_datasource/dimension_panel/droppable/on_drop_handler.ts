@@ -116,7 +116,6 @@ const isFieldDropType = (dropType: DropType) =>
 
 function onFieldDrop(props: DropHandlerProps<DraggedField>, shouldAddField?: boolean) {
   const { setState, state, source, target, dimensionGroups, indexPatterns } = props;
-
   const prioritizedOperation = dimensionGroups.find(
     (g) => g.groupId === target.groupId
   )?.prioritizedOperation;

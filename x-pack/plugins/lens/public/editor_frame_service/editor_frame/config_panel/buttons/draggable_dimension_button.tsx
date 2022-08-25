@@ -75,6 +75,7 @@ export function DraggableDimensionButton({
         groupId: group.groupId,
         filterOperations: group.filterOperations,
         prioritizedOperation: group.prioritizedOperation,
+        enableDropOperationsWithinSameGroup: group.enableDropOperationsWithinSameGroup
       },
       indexPatterns,
     },

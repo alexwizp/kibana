@@ -161,9 +161,15 @@ export const isOperationFromTheSameGroup = (op1?: DraggingIdentifier, op2?: Drag
 };
 
 export function getDropPropsForSameGroup(
-  isNewColumn?: boolean
+  isNewColumn?: boolean,
+  enableDropOperationsWithinSameGroup?: boolean
 ): { dropTypes: DropType[]; nextLabel?: string } | undefined {
-  return !isNewColumn ? { dropTypes: ['reorder'] } : { dropTypes: ['duplicate_compatible'] };
+  let dropTypes: DropType[] = !isNewColumn ? ['reorder'] : ['duplicate_compatible'];
+
+  if (enableDropOperationsWithinSameGroup) {
+    dropTypes = [...dropTypes, 'swap_compatible', 'combine_compatible'];
+  }
+  return { dropTypes };
 }
 
 export const getDropProps = (
@@ -174,7 +180,10 @@ export const getDropProps = (
     return sharedDatasource?.getDropProps(dropProps);
   } else {
     if (isOperationFromTheSameGroup(dropProps.source, dropProps.target)) {
-      return getDropPropsForSameGroup(dropProps.target.isNewColumn);
+      return getDropPropsForSameGroup(
+        dropProps.target.isNewColumn,
+        dropProps.target.enableDropOperationsWithinSameGroup
+      );
     }
     if (isOperationFromCompatibleGroup(dropProps.source, dropProps.target)) {
       return {
