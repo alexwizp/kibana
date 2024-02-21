@@ -78,7 +78,7 @@ const CategoryHeading: React.FC<{ type?: LinkCategoryType; label?: string; index
         {index > 0 && <EuiSpacer size="xl" />}
         {type === LinkCategoryType.title && (
           <>
-            <EuiTitle size="xxxs">
+            <EuiTitle size="s">
               <h2>{label}</h2>
             </EuiTitle>
             <EuiHorizontalRule css={styles.horizontalRule} />
