@@ -8,6 +8,8 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { EuiFlexItem, EuiSwitch } from '@elastic/eui';
 import type { ExceptionListRuleReferencesSchema } from '../../../../../../../common/api/detection_engine/rule_exceptions';
 
+import * as i18n from './translations';
+
 export const LinkListSwitch = memo(
   ({
     list,
@@ -41,6 +43,7 @@ export const LinkListSwitch = memo(
           onChange={onLinkOrUnlinkList}
           label=""
           checked={isListLinked}
+          aria-label={i18n.LINK_LIST_SWITCH_ARIA_LABEL(list.name)}
         />
       </EuiFlexItem>
     );
