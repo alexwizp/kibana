@@ -360,11 +360,12 @@ export const CommandList = memo<CommandListProps>(({ commands, display = 'defaul
         {commandsByGroups.map((commandsByGroup, i) => (
           <StyledEuiBasicTable
             data-test-subj={getTestId(
-              convertToTestId(commandsByGroup[0].helpGroupLabel ?? otherCommandsGroupLabel)
+              convertToTestId(commandsByGroup[i].helpGroupLabel ?? otherCommandsGroupLabel)
             )}
             key={`styledEuiBasicTable-${i}`}
             items={getTableItems(commandsByGroup)}
             columns={getTableColumns(commandsByGroup)}
+            tableCaption={commandsByGroup[i].name}
           />
         ))}
         {callout}
