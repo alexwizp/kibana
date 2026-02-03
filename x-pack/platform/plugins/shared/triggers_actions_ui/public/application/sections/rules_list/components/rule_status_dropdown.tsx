@@ -207,7 +207,6 @@ export const RuleStatusDropdown: React.FunctionComponent<ComponentOpts> = ({
       iconSide="right"
       iconType={!isUpdating && isEditable ? 'arrowDown' : undefined}
       onClick={onClickBadge}
-      iconOnClick={onClickBadge}
       onClickAriaLabel={OPEN_MENU_ARIA_LABEL}
       iconOnClickAriaLabel={OPEN_MENU_ARIA_LABEL}
       isDisabled={isUpdating}
