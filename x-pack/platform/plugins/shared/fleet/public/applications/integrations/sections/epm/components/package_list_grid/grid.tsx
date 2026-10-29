@@ -18,6 +18,7 @@ import {
   EuiAutoSizer,
   EuiSkeletonRectangle,
 } from '@elastic/eui';
+import { i18n } from '@kbn/i18n';
 import { FormattedMessage } from '@kbn/i18n-react';
 import { WindowScroller } from 'react-virtualized';
 import { APP_MAIN_SCROLL_CONTAINER_ID } from '@kbn/core-chrome-layout-constants';
@@ -130,8 +131,15 @@ export const GridColumn = ({
         parent={parent}
       >
         {({ registerChild }) => (
-          <div ref={registerChild} style={style}>
-            <EuiFlexGrid columns={columnCount} gutterSize={gutterSize} alignItems="start">
+          // react-virtualized renders the list as an ARIA grid, so each row and
+          // card needs row/gridcell roles for screen readers to reach the cards.
+          <div ref={registerChild} style={style} role="row">
+            <EuiFlexGrid
+              columns={columnCount}
+              gutterSize={gutterSize}
+              alignItems="start"
+              role="presentation"
+            >
               {items.map((item) => (
                 <EuiFlexItem
                   key={item.id}
@@ -145,6 +153,7 @@ export const GridColumn = ({
                     }
                   `}
                   tabIndex={-1}
+                  role="gridcell"
                 >
                   <PackageCard {...item} showLabels={showCardLabels} />
                 </EuiFlexItem>
@@ -173,6 +182,10 @@ export const GridColumn = ({
         <EuiAutoSizer disableHeight>
           {({ width }) => (
             <VirtualizedList
+              aria-label={i18n.translate('xpack.fleet.epmList.integrationsGridAriaLabel', {
+                defaultMessage: 'Integrations',
+              })}
+              containerRole="rowgroup"
               tabIndex={-1}
               ref={listRef}
               autoHeight

@@ -7,6 +7,7 @@
 
 import React from 'react';
 import 'jest-styled-components';
+import { within } from '@testing-library/react';
 
 import { createFleetTestRendererMock } from '../../../../../../mock';
 
@@ -92,6 +93,16 @@ describe('PackageListGrid', () => {
 
       expect(utils.getByText('Generic nginx description')).toBeInTheDocument();
       expect(utils.queryByText(/is part of the/)).not.toBeInTheDocument();
+    });
+
+    it('exposes the cards as cells of a named grid to screen readers', () => {
+      const { utils } = renderPackageListGrid({ list: [awsTile, nginx] });
+
+      const grid = utils.getByRole('grid', { name: 'Integrations' });
+      const rows = within(grid).getAllByRole('row');
+
+      expect(rows).toHaveLength(1);
+      expect(within(rows[0]).getAllByRole('gridcell')).toHaveLength(2);
     });
   });
 });
