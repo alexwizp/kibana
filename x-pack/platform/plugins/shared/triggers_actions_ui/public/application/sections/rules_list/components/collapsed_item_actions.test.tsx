@@ -352,6 +352,28 @@ describe('CollapsedItemActions', () => {
       expect(onDeleteRule).toHaveBeenCalled();
     });
 
+    test('passes the actions button to delete rule so focus can be returned to it', async () => {
+      render(<CollapsedItemActions {...getPropsWithRule()} />);
+
+      const actionsButton = screen.getByTestId('selectActionButton');
+      await userEvent.click(actionsButton);
+      await waitForEuiPopoverOpen();
+
+      await userEvent.click(screen.getByTestId('deleteRule'));
+      expect(onDeleteRule).toHaveBeenCalledWith(expect.anything(), actionsButton);
+    });
+
+    test('passes the actions button to update API key so focus can be returned to it', async () => {
+      render(<CollapsedItemActions {...getPropsWithRule()} />);
+
+      const actionsButton = screen.getByTestId('selectActionButton');
+      await userEvent.click(actionsButton);
+      await waitForEuiPopoverOpen();
+
+      await userEvent.click(screen.getByTestId('updateApiKey'));
+      expect(onUpdateAPIKey).toHaveBeenCalledWith(expect.anything(), actionsButton);
+    });
+
     test('renders actions correctly when rule is disabled', async () => {
       render(<CollapsedItemActions {...getPropsWithRule({ enabled: false })} />);
 
